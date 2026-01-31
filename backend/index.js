@@ -1,3 +1,6 @@
+const products = require("./products");
+app.get("/api/products", products.list);
+
 const express = require("express");
 const cors = require("cors");
 
