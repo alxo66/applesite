@@ -4,31 +4,30 @@ async function loadDeposit() {
   const container = document.getElementById("deposit");
 
   try {
-    const res = await fetch(`${API_URL}/api/deposit`);
+    const res = await fetch(API_URL + "/api/deposit");
     if (!res.ok) throw new Error("API error");
 
     const data = await res.json();
-
     container.innerHTML = "";
 
-    for (const coin in data) {
+    Object.keys(data).forEach((coin) => {
       const item = data[coin];
 
-      const div = document.createElement("div");
-      div.style.marginBottom = "40px";
+      const block = document.createElement("div");
+      block.style.marginBottom = "40px";
 
-      div.innerHTML = `
+      block.innerHTML = `
         <h3>${coin}</h3>
         <p>${item.address}</p>
         <img src="${item.qr}" width="200" />
         <p>Курс: ${item.rateRub} ₽</p>
       `;
 
-      container.appendChild(div);
-    }
+      container.appendChild(block);
+    });
 
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
     container.innerHTML =
       "<p style='color:red'>Ошибка загрузки данных. Проверь backend.</p>";
   }
