@@ -1,82 +1,47 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Личный кабинет</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="header">
-  <div class="container header-inner">
     <div class="logo"> Apple Store</div>
-
-    <nav class="nav">
-      <a href="index.html">Магазин</a>
-      <a href="deposit.html">Пополнить</a>
-      <a href="cabinet.html" class="active">Кабинет</a>
-      <a href="#">Отзывы</a>
-      <a href="#">FAQ</a>
+    <nav>
+        <a href="index.html">Магазин</a>
+        <a href="deposit.html">Пополнить</a>
+        <a href="cabinet.html" class="active">Кабинет</a>
+        <a href="#">Отзывы</a>
+        <a href="#">FAQ</a>
     </nav>
-  </div>
 </header>
 
 <main class="container">
+    <h1>Личный кабинет</h1>
 
-  <h1 class="page-title">Личный кабинет</h1>
-
-  <!-- Баланс -->
-  <div class="wallet-grid">
-
-    <div class="wallet-card">
-      <span class="label">Баланс</span>
-      <strong>$1000.00</strong>
+    <div class="stats">
+        <div class="card">
+            <span>Баланс</span>
+            <strong>0 ₽</strong>
+        </div>
+        <div class="card">
+            <span>Зарезервировано</span>
+            <strong>0 ₽</strong>
+        </div>
+        <div class="card">
+            <span>Доступно</span>
+            <strong>0 ₽</strong>
+        </div>
     </div>
 
-    <div class="wallet-card warning">
-      <span class="label">Зарезервировано</span>
-      <strong>$900.00</strong>
-    </div>
-
-    <div class="wallet-card success">
-      <span class="label">Доступно</span>
-      <strong>$100.00</strong>
-    </div>
-
-  </div>
-
-  <!-- Заказы -->
-  <h2 class="section-title">Мои заказы</h2>
-
-  <div class="orders">
-
-    <div class="order">
-      <div>
-        <strong>MacBook Pro 14”</strong><br>
-        <small>Заказ #10231</small>
-      </div>
-      <div class="order-status reserved">Зарезервирован</div>
-      <div>$900</div>
-    </div>
-
-    <div class="order">
-      <div>
-        <strong>iPhone 16 Pro</strong><br>
-        <small>Заказ #10212</small>
-      </div>
-      <div class="order-status done">Завершён</div>
-      <div>$0</div>
-    </div>
-
-  </div>
-
+    <h2>Мои заказы</h2>
+    <p style="opacity:0.6">У вас пока нет заказов</p>
 </main>
 
-<footer class="footer">
-  <div class="container">
+<footer>
     © 2026 Apple Store
-  </div>
 </footer>
 
 </body>
