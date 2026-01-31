@@ -1,21 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Пополнение баланса</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+    .coin {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+    }
+    img {
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
 <h1>Пополнение баланса</h1>
-<div id="deposit"></div>
+<div id="deposit">Загрузка...</div>
 
-<script type="module">
-  import { getDepositData } from "./frontend/api.js";
+<script>
+  const API_URL = "https://ТВОЙ-RAILWAY-ДОМЕН"; // ОБЯЗАТЕЛЬНО
 
-  const container = document.getElementById("deposit");
-  const data = await getDepositData();
+  fetch(API_URL + "/api/deposit")
+    .then(res => res.json())
+    .then(data => {
+      const container = document.getElementById("deposit");
+      container.innerHTML = "";
 
-  Object.entries(data).forEach(([coin, info]) => {
-    const block = document.createElement("div");
-    block.innerHTML = `
-      <h2>${coin}</h2>
-      <p>${info.address}</p>
-      <img src="${info.qr}" width="200">
-      <p>1 ${coin} ≈ ${info.rateRub} ₽</p>
-      <hr>
-    `;
-    container.appendChild(block);
-  });
+      Object.keys(data).forEach(coin => {
+        const info = data[coin];
+
+        const div = document.createElement("div");
+        div.className = "coin";
+        div.innerHTML = `
+          <h2>${coin}</h2>
+          <p><b>Адрес:</b><br>${info.address}</p>
+          <img src="${info.qr}" width="180">
+          <p>1 ${coin} ≈ ${info.rateRub} ₽</p>
+        `;
+
+        container.appendChild(div);
+      });
+    })
+    .catch(err => {
+      document.getElementById("deposit").innerText =
+        "Ошибка загрузки данных. Проверь backend.";
+      console.error(err);
+    });
 </script>
+
+</body>
+</html>
