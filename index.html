@@ -2,46 +2,69 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>iSite — Магазин</title>
+  <title>Apple Store</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <header class="header">
-  <h1>iSite</h1>
-  <nav>
-    <a href="#">Каталог</a>
-    <a href="#">Доставка</a>
-    <a href="#">Контакты</a>
-  </nav>
+  <div class="container header-inner">
+    <div class="logo"> Apple Store</div>
+
+    <nav class="nav">
+      <a href="index.html">Магазин</a>
+      <a href="deposit.html">Пополнить</a>
+      <a href="cabinet.html">Кабинет</a>
+      <a href="#">Отзывы</a>
+      <a href="#">FAQ</a>
+    </nav>
+  </div>
 </header>
 
-<section class="hero">
-  <h2>Лучшие товары — без переплат</h2>
-  <p>Быстрая доставка • Гарантия • Поддержка</p>
-</section>
+<main class="container">
 
-<section class="products">
-  <div class="product-card">
-    <img src="images/product-1.jpg" alt="Product" />
-    <h3>iPhone 15 Pro</h3>
-    <p class="price">89 990 ₽</p>
-    <button>Купить</button>
+  <h1 class="page-title">Популярные товары</h1>
+
+  <div class="products-grid">
+
+    <div class="product-card">
+      <img src="images/iphone-15-pro.jpg" alt="iPhone 15 Pro">
+      <h3>iPhone 15 Pro</h3>
+      <p class="price">89 990 ₽</p>
+      <button>Купить</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/iphone-15-pro-max.jpg" alt="iPhone 15 Pro Max">
+      <h3>iPhone 15 Pro Max</h3>
+      <p class="price">99 990 ₽</p>
+      <button>Купить</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/macbook-pro.jpg" alt="MacBook Pro">
+      <h3>MacBook Pro M3</h3>
+      <p class="price">189 990 ₽</p>
+      <button>Купить</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/airpods-pro.jpg" alt="AirPods Pro">
+      <h3>AirPods Pro</h3>
+      <p class="price">24 990 ₽</p>
+      <button>Купить</button>
+    </div>
+
   </div>
 
-  <div class="product-card">
-    <img src="images/product-2.jpg" alt="Product" />
-    <h3>AirPods Pro</h3>
-    <p class="price">19 990 ₽</p>
-    <button>Купить</button>
-  </div>
-</section>
+</main>
 
 <footer class="footer">
-  © 2026 iSite
+  <div class="container">
+    © 2026 Apple Store. Не является официальным магазином Apple.
+  </div>
 </footer>
 
-<script src="script.js"></script>
 </body>
 </html>
