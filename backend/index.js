@@ -1,48 +1,40 @@
-import express from "express";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
 
-import { getRates } from "./rates.js";
-import { createOrder, markPaid, getOrders } from "./orders.js";
-import { generateQR } from "./qr.js";
-import { WALLETS } from "./config.js";
+const payments = require("./payments");
+const orders = require("./orders");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-/**
- * Курсы валют
- */
-app.get("/api/rates", async (_, res) => {
-  res.json(await getRates());
+const users = {}; 
+// users[userId] = { balance: 0, deposits: [], orders: [] }
+
+app.use((req, res, next) => {
+  const userId = req.headers["x-user-id"];
+  if (!userId) return res.status(401).json({ error: "NO_USER" });
+
+  if (!users[userId]) {
+    users[userId] = {
+      balance: 0,
+      deposits: [],
+      orders: []
+    };
+  }
+
+  req.user = users[userId];
+  req.userId = userId;
+  next();
 });
 
-/**
- * Создать заказ
- */
-app.post("/api/order", async (req, res) => {
-  const order = createOrder(req.body);
-  res.json(order);
-});
+app.post("/api/deposit", payments.deposit);
+app.get("/api/balance", payments.balance);
+app.get("/api/deposits", payments.deposits);
 
-/**
- * Получить QR для оплаты
- */
-app.get("/api/qr/:currency", async (req, res) => {
-  const wallet = WALLETS[req.params.currency];
-  if (!wallet) return res.status(404).end();
+app.post("/api/order", orders.create);
+app.get("/api/orders", orders.list);
 
-  const qr = await generateQR(wallet);
-  res.json({ wallet, qr });
-});
-
-/**
- * Заказы (для кабинета)
- */
-app.get("/api/orders", (_, res) => {
-  res.json(getOrders());
-});
-
-app.listen(3000, () =>
-  console.log("🚀 Backend: http://localhost:3000")
+app.listen(process.env.PORT || 3000, () =>
+  console.log("Backend running")
 );
