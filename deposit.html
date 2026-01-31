@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <title>Пополнение баланса</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+import { getDepositInfo } from './api.js';
 
-<h1>Пополнение баланса</h1>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const data = await getDepositInfo();
+    console.log('DEPOSIT DATA:', data);
 
-<div id="deposit"></div>
-<script src="frontend/api.js"></script>
-</body>
-</html>
+    // пример вывода
+    const el = document.getElementById('deposit-data');
+    if (el) {
+      el.textContent = JSON.stringify(data, null, 2);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Ошибка загрузки данных. Проверь backend.');
+  }
+});
