@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const products = require("./products");
 
 exports.create = (req, res) => {
