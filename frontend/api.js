@@ -1,19 +1,21 @@
-const API_URL = 'https://applestore-backend-production.up.railway.app';
+const API_BASE = "https://applestore-backend-production.up.railway.app/api";
 
-async function getDepositInfo() {
-  const res = await fetch(`${API_URL}/api/deposit`);
-  if (!res.ok) throw new Error('Ошибка загрузки депозита');
-  return res.json();
+async function apiFetch(path, options = {}) {
+  try {
+    const res = await fetch(API_BASE + path, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      ...options
+    });
+
+    if (!res.ok) {
+      throw new Error("API error: " + res.status);
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("API FETCH ERROR:", err);
+    throw err;
+  }
 }
-
-async function getProfile() {
-  const res = await fetch(`${API_URL}/api/profile`);
-  if (!res.ok) throw new Error('Ошибка загрузки профиля');
-  return res.json();
-}
-
-// 👇 ДЕЛАЕМ ДОСТУПНЫМ ГЛОБАЛЬНО
-window.API = {
-  getDepositInfo,
-  getProfile
-};
