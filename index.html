@@ -1,115 +1,75 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Apple Store</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Apple Store</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="header">
-  <div class="container header-inner">
-    <div class="logo"> Apple Store</div>
-
-    <nav class="nav">
-      <a href="index.html">Магазин</a>
-      <a href="deposit.html">Пополнить</a>
-      <a href="cabinet.html">Кабинет</a>
-      <a href="#">Отзывы</a>
-      <a href="#">FAQ</a>
+    <a href="index.html" class="logo"> Apple Store</a>
+    <nav>
+        <a href="index.html" class="active">Магазин</a>
+        <a href="deposit.html">Пополнить</a>
+        <a href="cabinet.html">Кабинет</a>
+        <a href="reviews.html">Отзывы</a>
+        <a href="faq.html">FAQ</a>
     </nav>
-  </div>
 </header>
 
 <main class="container">
+    <h1>Популярные товары</h1>
 
-  <h1 class="page-title">Популярные товары</h1>
+    <div class="products">
 
-  <div class="products-grid">
+        <div class="product">
+            <img src="images/iphone-16.jpg" alt="">
+            <h3>iPhone 16</h3>
+            <p>79 990 ₽</p>
+            <button>Купить</button>
+        </div>
 
-    <!-- iPhone 16 -->
-    <div class="product-card">
-      <img src="images/iphone-16.jpg" alt="iPhone 16">
-      <h3>iPhone 16</h3>
-      <p class="price">79 990 ₽</p>
-      <button>Купить</button>
+        <div class="product">
+            <img src="images/iphone-16-pro.jpg" alt="">
+            <h3>iPhone 16 Pro</h3>
+            <p>99 990 ₽</p>
+            <button>Купить</button>
+        </div>
+
+        <div class="product">
+            <img src="images/iphone-16-pro-max.jpg" alt="">
+            <h3>iPhone 16 Pro Max</h3>
+            <p>109 990 ₽</p>
+            <button>Купить</button>
+        </div>
+
+        <div class="product">
+            <img src="images/iphone-15.jpg" alt="">
+            <h3>iPhone 15</h3>
+            <p>69 990 ₽</p>
+            <button>Купить</button>
+        </div>
+
+        <div class="product">
+            <img src="images/ipad-air.jpg" alt="">
+            <h3>iPad Air</h3>
+            <p>59 990 ₽</p>
+            <button>Купить</button>
+        </div>
+
+        <div class="product">
+            <img src="images/macbook-air-13.jpg" alt="">
+            <h3>MacBook Air 13"</h3>
+            <p>119 990 ₽</p>
+            <button>Купить</button>
+        </div>
+
     </div>
-
-    <div class="product-card">
-      <img src="images/iphone-16-pro.jpg" alt="iPhone 16 Pro">
-      <h3>iPhone 16 Pro</h3>
-      <p class="price">99 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <div class="product-card">
-      <img src="images/iphone-16-pro-max.jpg" alt="iPhone 16 Pro Max">
-      <h3>iPhone 16 Pro Max</h3>
-      <p class="price">109 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <!-- iPhone 15 -->
-    <div class="product-card">
-      <img src="images/iphone-15.jpg" alt="iPhone 15">
-      <h3>iPhone 15</h3>
-      <p class="price">69 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <div class="product-card">
-      <img src="images/iphone-15-pro.jpg" alt="iPhone 15 Pro">
-      <h3>iPhone 15 Pro</h3>
-      <p class="price">89 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <div class="product-card">
-      <img src="images/iphone-15-pro-max.jpg" alt="iPhone 15 Pro Max">
-      <h3>iPhone 15 Pro Max</h3>
-      <p class="price">99 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <!-- iPad -->
-    <div class="product-card">
-      <img src="images/ipad-air.jpg" alt="iPad Air">
-      <h3>iPad Air</h3>
-      <p class="price">59 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <div class="product-card">
-      <img src="images/ipad-pro.jpg" alt="iPad Pro">
-      <h3>iPad Pro</h3>
-      <p class="price">89 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <!-- MacBook -->
-    <div class="product-card">
-      <img src="images/macbook-air-13.jpg" alt="MacBook Air 13">
-      <h3>MacBook Air 13”</h3>
-      <p class="price">109 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-    <div class="product-card">
-      <img src="images/macbook-pro-14.jpg" alt="MacBook Pro 14">
-      <h3>MacBook Pro 14”</h3>
-      <p class="price">179 990 ₽</p>
-      <button>Купить</button>
-    </div>
-
-  </div>
-
 </main>
 
-<footer class="footer">
-  <div class="container">
-    © 2026 Apple Store. Не является официальным магазином Apple.
-  </div>
+<footer>
+    © 2026 Apple Store
 </footer>
 
 </body>
