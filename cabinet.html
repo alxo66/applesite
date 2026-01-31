@@ -1,128 +1,67 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Личный кабинет</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="stylesheet" href="style.css" />
-
-  <style>
-    .cabinet {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: #111;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.4);
-    }
-
-    .balance {
-      font-size: 32px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #222;
-      text-align: left;
-    }
-
-    .status-paid {
-      color: #4caf50;
-    }
-
-    .status-pending {
-      color: #ff9800;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <header>
-    <h1>Личный кабинет</h1>
-  </header>
+<h1>Личный кабинет</h1>
 
-  <main class="cabinet">
+<div class="card">
+  <h2>Баланс</h2>
+  <p id="balance">Загрузка...</p>
+</div>
 
-    <div class="card">
-      <h2>Баланс</h2>
-      <div class="balance" id="balance">—</div>
-    </div>
+<div class="card">
+  <h2>История пополнений</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Дата</th>
+        <th>Валюта</th>
+        <th>Сумма</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody id="history">
+      <tr><td colspan="4">Загрузка...</td></tr>
+    </tbody>
+  </table>
+</div>
 
-    <div class="card">
-      <h2>История пополнений</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Дата</th>
-            <th>Валюта</th>
-            <th>Сумма</th>
-            <th>Статус</th>
-          </tr>
-        </thead>
-        <tbody id="payments">
-          <tr><td colspan="4">Загрузка...</td></tr>
-        </tbody>
-      </table>
-    </div>
+<p id="error" style="color:red;"></p>
 
-  </main>
+<script src="frontend/api.js"></script>
+<script>
+(async () => {
+  try {
+    const data = await apiFetch("/orders");
 
-  <script src="frontend/api.js"></script>
+    document.getElementById("balance").innerText =
+      data.balance + " ₽";
 
-  <script>
-    const balanceEl = document.getElementById('balance');
-    const paymentsEl = document.getElementById('payments');
+    const tbody = document.getElementById("history");
+    tbody.innerHTML = "";
 
-    async function loadCabinet() {
-      try {
-        const data = await window.API.getProfile();
+    data.history.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.date}</td>
+        <td>${row.currency}</td>
+        <td>${row.amount}</td>
+        <td>${row.status}</td>
+      `;
+      tbody.appendChild(tr);
+    });
 
-        balanceEl.textContent = data.balance + ' ₽';
-
-        paymentsEl.innerHTML = '';
-
-        if (!data.payments.length) {
-          paymentsEl.innerHTML = '<tr><td colspan="4">Нет операций</td></tr>';
-          return;
-        }
-
-        data.payments.forEach(p => {
-          paymentsEl.innerHTML += `
-            <tr>
-              <td>${p.date}</td>
-              <td>${p.currency}</td>
-              <td>${p.amount}</td>
-              <td class="${p.status === 'paid' ? 'status-paid' : 'status-pending'}">
-                ${p.status}
-              </td>
-            </tr>
-          `;
-        });
-
-      } catch (e) {
-        console.error(e);
-        balanceEl.textContent = 'Ошибка';
-        paymentsEl.innerHTML = '<tr><td colspan="4">Не удалось загрузить данные</td></tr>';
-      }
-    }
-
-    loadCabinet();
-  </script>
+  } catch {
+    document.getElementById("error").innerText =
+      "Не удалось загрузить данные";
+  }
+})();
+</script>
 
 </body>
 </html>
