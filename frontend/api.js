@@ -10,9 +10,7 @@ async function loadDeposit() {
     const data = await res.json();
     container.innerHTML = "";
 
-    Object.keys(data).forEach((coin) => {
-      const item = data[coin];
-
+    Object.entries(data).forEach(([coin, item]) => {
       const block = document.createElement("div");
       block.style.marginBottom = "40px";
 
@@ -26,10 +24,10 @@ async function loadDeposit() {
       container.appendChild(block);
     });
 
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     container.innerHTML =
-      "<p style='color:red'>Ошибка загрузки данных. Проверь backend.</p>";
+      "<p style='color:red'>Ошибка загрузки данных</p>";
   }
 }
 
