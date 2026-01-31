@@ -1,17 +1,145 @@
-import { getDepositInfo } from './api.js';
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Пополнение баланса</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const data = await getDepositInfo();
-    console.log('DEPOSIT DATA:', data);
+  <link rel="stylesheet" href="style.css" />
 
-    // пример вывода
-    const el = document.getElementById('deposit-data');
-    if (el) {
-      el.textContent = JSON.stringify(data, null, 2);
+  <style>
+    .deposit-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
     }
-  } catch (err) {
-    console.error(err);
-    alert('Ошибка загрузки данных. Проверь backend.');
-  }
-});
+
+    .wallets {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .wallet {
+      background: #111;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+
+    .wallet h3 {
+      margin-bottom: 10px;
+    }
+
+    .wallet img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      margin: 10px auto;
+      display: block;
+    }
+
+    .address {
+      font-size: 13px;
+      word-break: break-all;
+      background: #000;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .rate-box {
+      margin-top: 30px;
+      background: #0f0f0f;
+      padding: 20px;
+      border-radius: 16px;
+    }
+
+    .error {
+      color: #ff4d4d;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Пополнение баланса</h1>
+  </header>
+
+  <main class="deposit-container">
+
+    <p>
+      Выберите криптовалюту и отправьте средства на указанный адрес.  
+      После подтверждения в сети баланс будет зачислен автоматически.
+    </p>
+
+    <section class="wallets" id="wallets">
+      <!-- кошельки загрузятся -->
+    </section>
+
+    <section class="rate-box" id="rates">
+      <h3>Актуальные курсы</h3>
+      <p>Загрузка курсов...</p>
+    </section>
+
+    <div class="error" id="error"></div>
+
+  </main>
+
+  <!-- API -->
+  <script src="frontend/api.js"></script>
+
+  <script>
+    const walletsEl = document.getElementById('wallets');
+    const ratesEl = document.getElementById('rates');
+    const errorEl = document.getElementById('error');
+
+    function copy(text) {
+      navigator.clipboard.writeText(text);
+      alert('Адрес скопирован');
+    }
+
+    async function loadDeposit() {
+      try {
+        const data = await window.API.getDepositInfo();
+
+        walletsEl.innerHTML = '';
+
+        data.wallets.forEach(w => {
+          walletsEl.innerHTML += `
+            <div class="wallet">
+              <h3>${w.currency}</h3>
+              <img src="${w.qr}" alt="${w.currency}">
+              <div class="address" onclick="copy('${w.address}')">
+                ${w.address}
+              </div>
+            </div>
+          `;
+        });
+
+        ratesEl.innerHTML = `
+          <h3>Актуальные курсы</h3>
+          <ul>
+            <li>BTC: ${data.rates.BTC} ₽</li>
+            <li>ETH: ${data.rates.ETH} ₽</li>
+            <li>USDT: ${data.rates.USDT} ₽</li>
+            <li>TON: ${data.rates.TON} ₽</li>
+          </ul>
+        `;
+
+      } catch (e) {
+        console.error(e);
+        errorEl.textContent = 'Ошибка загрузки данных. Проверь backend.';
+      }
+    }
+
+    loadDeposit();
+  </script>
+
+</body>
+</html>
