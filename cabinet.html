@@ -1,108 +1,128 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Личный кабинет</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Личный кабинет</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    :root {
-      --bg: #f5f5f7;
-      --card: #fff;
-      --text: #111;
-      --muted: #777;
-      --accent: #0071e3;
-      --radius: 16px;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  background: #f5f6f8;
+  color: #111;
+}
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
 
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+h1 {
+  font-size: 36px;
+}
 
-    h1 {
-      font-size: 36px;
-      margin-bottom: 30px;
-    }
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
 
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.06);
-    }
+.balance {
+  font-size: 42px;
+  font-weight: bold;
+}
 
-    .balance {
-      font-size: 32px;
-      font-weight: 600;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
 
-    th, td {
-      text-align: left;
-      padding: 12px 8px;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
-    }
+.status-ok {
+  color: green;
+}
 
-    th {
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .empty {
-      color: var(--muted);
-      padding: 20px 0;
-    }
-  </style>
+.status-pending {
+  color: orange;
+}
+</style>
 </head>
+
 <body>
-
 <div class="container">
-  <h1>Личный кабинет</h1>
 
-  <div class="card">
-    <h2>Баланс</h2>
-    <div class="balance">—</div>
-    <div class="empty">Баланс будет отображён после подключения backend</div>
-  </div>
+<h1>Личный кабинет</h1>
 
-  <div class="card">
-    <h2>История пополнений</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Дата</th>
-          <th>Валюта</th>
-          <th>Сумма</th>
-          <th>Статус</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td colspan="4" class="empty">
-            История появится после первого пополнения
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="card">
+<h2>Баланс</h2>
+<div class="balance" id="balance">—</div>
 </div>
+
+<div class="card">
+<h2>История пополнений</h2>
+
+<table>
+<thead>
+<tr>
+<th>Дата</th>
+<th>Валюта</th>
+<th>Сумма</th>
+<th>Статус</th>
+</tr>
+</thead>
+<tbody id="history">
+<tr><td colspan="4">Загрузка...</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<script>
+const API_BASE = "https://applestore-backend-production.up.railway.app/api";
+
+async function loadCabinet() {
+  const balanceRes = await fetch(`${API_BASE}/balance`);
+  const balanceData = await balanceRes.json();
+  document.getElementById("balance").innerText = balanceData.balance + " ₽";
+
+  const historyRes = await fetch(`${API_BASE}/deposits`);
+  const history = await historyRes.json();
+
+  const tbody = document.getElementById("history");
+  tbody.innerHTML = "";
+
+  if (!history.length) {
+    tbody.innerHTML = "<tr><td colspan='4'>Нет операций</td></tr>";
+    return;
+  }
+
+  history.forEach(d => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${new Date(d.date).toLocaleString()}</td>
+      <td>${d.currency}</td>
+      <td>${d.amount}</td>
+      <td class="${d.status === 'done' ? 'status-ok' : 'status-pending'}">
+        ${d.status}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+loadCabinet();
+</script>
 
 </body>
 </html>
