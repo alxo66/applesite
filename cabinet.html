@@ -21,6 +21,7 @@ body {
 
 h1 {
   font-size: 36px;
+  margin-bottom: 24px;
 }
 
 .card {
@@ -47,12 +48,25 @@ th, td {
   text-align: left;
 }
 
+th {
+  font-weight: 600;
+  color: #666;
+}
+
 .status-ok {
-  color: green;
+  color: #1a7f37;
+  font-weight: 500;
 }
 
 .status-pending {
-  color: orange;
+  color: #d97706;
+  font-weight: 500;
+}
+
+.empty {
+  color: #888;
+  text-align: center;
+  padding: 20px;
 }
 </style>
 </head>
@@ -62,28 +76,48 @@ th, td {
 
 <h1>Личный кабинет</h1>
 
+<!-- БАЛАНС -->
 <div class="card">
-<h2>Баланс</h2>
-<div class="balance" id="balance">—</div>
+  <h2>Баланс</h2>
+  <div class="balance" id="balance">—</div>
 </div>
 
+<!-- ПОПОЛНЕНИЯ -->
 <div class="card">
-<h2>История пополнений</h2>
+  <h2>История пополнений</h2>
 
-<table>
-<thead>
-<tr>
-<th>Дата</th>
-<th>Валюта</th>
-<th>Сумма</th>
-<th>Статус</th>
-</tr>
-</thead>
-<tbody id="history">
-<tr><td colspan="4">Загрузка...</td></tr>
-</tbody>
-</table>
+  <table>
+    <thead>
+      <tr>
+        <th>Дата</th>
+        <th>Валюта</th>
+        <th>Сумма</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody id="deposits">
+      <tr><td colspan="4" class="empty">Загрузка...</td></tr>
+    </tbody>
+  </table>
+</div>
 
+<!-- ПОКУПКИ -->
+<div class="card">
+  <h2>Покупки</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Дата</th>
+        <th>Товар</th>
+        <th>Цена</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody id="orders">
+      <tr><td colspan="4" class="empty">Загрузка...</td></tr>
+    </tbody>
+  </table>
 </div>
 
 </div>
@@ -92,33 +126,63 @@ th, td {
 const API_BASE = "https://applestore-backend-production.up.railway.app/api";
 
 async function loadCabinet() {
-  const balanceRes = await fetch(`${API_BASE}/balance`);
-  const balanceData = await balanceRes.json();
-  document.getElementById("balance").innerText = balanceData.balance + " ₽";
+  try {
+    /* БАЛАНС */
+    const balanceRes = await fetch(API_BASE + "/balance");
+    const balanceData = await balanceRes.json();
+    document.getElementById("balance").innerText =
+      balanceData.balance.toLocaleString() + " ₽";
 
-  const historyRes = await fetch(`${API_BASE}/deposits`);
-  const history = await historyRes.json();
+    /* ПОПОЛНЕНИЯ */
+    const depRes = await fetch(API_BASE + "/deposits");
+    const deposits = await depRes.json();
+    const depBody = document.getElementById("deposits");
+    depBody.innerHTML = "";
 
-  const tbody = document.getElementById("history");
-  tbody.innerHTML = "";
+    if (!deposits.length) {
+      depBody.innerHTML =
+        "<tr><td colspan='4' class='empty'>Нет пополнений</td></tr>";
+    } else {
+      deposits.forEach(d => {
+        depBody.innerHTML += `
+          <tr>
+            <td>${new Date(d.date).toLocaleString()}</td>
+            <td>${d.currency}</td>
+            <td>${d.amount.toLocaleString()} ₽</td>
+            <td class="${d.status === "done" ? "status-ok" : "status-pending"}">
+              ${d.status}
+            </td>
+          </tr>
+        `;
+      });
+    }
 
-  if (!history.length) {
-    tbody.innerHTML = "<tr><td colspan='4'>Нет операций</td></tr>";
-    return;
+    /* ПОКУПКИ */
+    const ordRes = await fetch(API_BASE + "/orders");
+    const orders = await ordRes.json();
+    const ordBody = document.getElementById("orders");
+    ordBody.innerHTML = "";
+
+    if (!orders.length) {
+      ordBody.innerHTML =
+        "<tr><td colspan='4' class='empty'>Покупок ещё нет</td></tr>";
+    } else {
+      orders.forEach(o => {
+        ordBody.innerHTML += `
+          <tr>
+            <td>${new Date(o.date).toLocaleString()}</td>
+            <td>${o.name}</td>
+            <td>${o.price.toLocaleString()} ₽</td>
+            <td class="status-ok">Оплачено</td>
+          </tr>
+        `;
+      });
+    }
+
+  } catch (e) {
+    console.error(e);
+    alert("Ошибка подключения к backend");
   }
-
-  history.forEach(d => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${new Date(d.date).toLocaleString()}</td>
-      <td>${d.currency}</td>
-      <td>${d.amount}</td>
-      <td class="${d.status === 'done' ? 'status-ok' : 'status-pending'}">
-        ${d.status}
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
 }
 
 loadCabinet();
