@@ -1,220 +1,79 @@
-<!DOCTYPE html>
-<html lang="ru" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta name="description" content="Пополните баланс, чтобы оплачивать услуги аудита безопасности.">
-<title>Пополнить — Cyber Market</title>
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+/* ===== ЛИЧНЫЙ КАБИНЕТ ===== */
 
-  <!-- Vercel Web Analytics -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/ru/" class="logo">
-                <i class="fas fa-user-shield"></i>
-                <span>CYBER MARKET</span>
-            </a>
-            
-            <div class="nav-links">
-                <a href="/ru/"><i class="fas fa-home"></i> Магазин</a>
-                <a href="/ru/deposit.html" class="active"><i class="fas fa-wallet"></i> Пополнить</a>
-                <a href="/ru/cabinet.html"><i class="fas fa-user"></i> Кабинет</a>
-                <a href="#" id="balance-display" class="balance-btn">
-                    <i class="fas fa-coins"></i>
-                    <span id="balance">0.00$</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+.wallet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
 
-    <main class="deposit-page">
-        <div class="container">
-            <div class="page-header">
-                <h1><i class="fas fa-wallet"></i> Пополнение баланса</h1>
-                <p>Пополняйте криптовалютой, чтобы покупать услуги</p>
-            </div>
-            
-            <div class="deposit-grid">
-                <!-- Левая колонка: форма -->
-                <div class="deposit-form">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-calculator"></i> Калькулятор пополнения</h3>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label><i class="fas fa-dollar-sign"></i> Сумма в USD</label>
-                                <input type="number" id="amount" min="20" max="5000" value="100" step="10" class="form-control"> 
-                                <div class="amount-buttons">
-                                    <button data-amount="20">20$</button>
-                                    <button data-amount="50">50$</button>
-                                    <button data-amount="100" class="active">100$</button>
-                                    <button data-amount="200">200$</button>
-                                    <button data-amount="500">500$</button>
-                                    <button data-amount="1000">1000$</button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label><i class="fas fa-coins"></i> Cryptocurrency</label>
-                                <div class="crypto-selector">
-                                    <div class="crypto-option active" data-crypto="BTC">
-                                        <i class="fab fa-bitcoin"></i>
-                                        <span>Bitcoin (BTC)</span>
-                                    </div>
-                                    <div class="crypto-option" data-crypto="USDT">
-                                        <i class="fas fa-coins"></i>
-                                        <span>USDT (TRC20)</span>
-                                    </div>
-                                    <div class="crypto-option" data-crypto="TON">
-                                        <i class="fab fa-telegram"></i>
-                                        <span>TON</span>
-                                    </div>
-                                    <div class="crypto-option" data-crypto="ETH">
-                                        <i class="fab fa-ethereum"></i>
-                                        <span>Ethereum (ETH)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button id="generatePayment" class="btn-primary btn-large">
-                                <i class="fas fa-qrcode"></i> Получить платежный адрес
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Правая колонка: информация -->
-                <div class="deposit-info">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-info-circle"></i> Данные для оплаты</h3>
-                        </div>
-                        
-                        <div class="card-body">
-                            <div id="paymentDetails" style="display: none;">
-                                <div class="alert alert-success">
-                                    <i class="fas fa-check-circle"></i>
-                                    <strong>Payment pending</strong>
-                                </div>
-                                
-                                <div class="payment-summary">
-                                    <div class="summary-item">
-                                        <span>Amount:</span>
-                                        <strong id="summaryAmount">100 USD</strong>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span>Cryptocurrency:</span>
-                                        <strong id="summaryCrypto">BTC</strong>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span>To pay:</span>
-                                        <strong id="summaryCryptoAmount">0.0022 BTC</strong>
-                                    </div>
-                                </div>
-                                
-                                <div class="wallet-address">
-                                    <label>Payment address:</label>
-                                    <div class="address-box">
-                                        <code id="walletAddress">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</code>
-                                        <button id="copyAddress">
-                                            <i class="far fa-copy"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="qr-code">
-                                    <div id="qrcode"></div>
-                                    <p>Отсканируйте QR-код или скопируйте адрес</p>
-                                </div>
-                                
-                                <div class="payment-timer">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Time to pay: </span>
-                                    <strong id="timer">15:00</strong>
-                                </div>
-                                
-                                <div class="instructions">
-                                    <h4><i class="fas fa-list-ol"></i> Instructions:</h4>
-                                    <ol>
-                                        <li>Скопируйте адрес кошелька, указанный выше</li>
-                                        <li>Отправьте точную сумму с вашего крипто кошелька</li>
-                                        <li>Дождитесь подтверждения от сети</li>
-                                        <li>Ваш баланс будет обновлен автоматически</li>
-                                    </ol>
-                                </div>
-                            </div>
-                            
-                            <div id="noPayment" style="display: block;">
-                                <div class="placeholder-state">
-                                    <i class="fas fa-wallet fa-3x"></i>
-                                    <h4>Введите сумму пополнения счета</h4>
-                                    <p>Выберите криптовалюту и нажмите “Получить адрес”</p>
-                                </div>
-                                
-                                <div class="crypto-rates">
-                                    <h5><i class="fas fa-chart-line"></i> Approximate rates:</h5>
-                                    <ul>
-                                        <li>1 BTC ≈ 45,000 USD</li>
-                                        <li>1 ETH ≈ 3,500 USD</li>
-                                        <li>1 USDT = 1 USD</li>
-                                        <li>1 TON ≈ 2 USD</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Frequently asked questions -->
-            <div class="faq-section">
-                <h3><i class="far fa-question-circle"></i> Вопросы и ответы</h3>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Сколько времени требуется для пополнения баланса?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Обычно через 5-10 минут после подтверждения средства поступают на баланс. Для получения Bitcoin может потребоваться до 1 часа.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Могу ли я пополнить счет с помощью других криптовалют?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Да, мы принимаем BTC, ETH, USDT (TRC20), TON, LTC, BNB и прочие.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Что делать, если мой платеж не пришел?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Свяжитесь со службой поддержки в Telegram: @cyber_supp_bot и укажите хэш транзакции.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+.wallet-card {
+  background: #111;
+  border-radius: 14px;
+  padding: 24px;
+  color: #fff;
+}
 
-    <script src="/script.js"></script>
-    <!-- Библиотека для QR-кода -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-</body>
-</html>
+.wallet-card .label {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.wallet-card strong {
+  font-size: 28px;
+  display: block;
+  margin-top: 8px;
+}
+
+.wallet-card.warning {
+  background: #1a1a1a;
+  border: 1px solid #ff9800;
+}
+
+.wallet-card.success {
+  background: #1a1a1a;
+  border: 1px solid #4caf50;
+}
+
+.section-title {
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.orders {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order {
+  background: #111;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.order-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.order-status.reserved {
+  background: rgba(255, 152, 0, 0.15);
+  color: #ff9800;
+}
+
+.order-status.done {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.nav a.active {
+  color: #fff;
+  font-weight: 600;
+}
