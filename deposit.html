@@ -1,134 +1,149 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<title>Пополнение баланса</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-body {
-  margin: 0;
-  font-family: Inter, system-ui, Arial, sans-serif;
-  background: #f5f6f8;
-  color: #111;
-}
+  <meta charset="UTF-8" />
+  <title>Пополнение баланса</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #111;
+      --muted: #777;
+      --accent: #0071e3;
+      --radius: 16px;
+    }
 
-.container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 0 16px;
-}
+    * { box-sizing: border-box; }
 
-h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-p {
-  color: #555;
-}
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
 
-.card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  margin-top: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
-}
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-  gap: 16px;
-}
+    p {
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
 
-.wallet {
-  border: 1px solid #eee;
-  border-radius: 12px;
-  padding: 16px;
-}
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    }
 
-.wallet h3 {
-  margin: 0 0 8px;
-}
+    .wallets {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
 
-.addr {
-  font-family: monospace;
-  word-break: break-all;
-  font-size: 14px;
-}
+    .wallet {
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 16px;
+    }
 
-.error {
-  color: #d00;
-  margin-top: 16px;
-}
+    .wallet h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
 
-.loading {
-  color: #777;
-}
-</style>
+    .address {
+      font-size: 13px;
+      word-break: break-all;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .copy {
+      margin-top: 10px;
+      display: inline-block;
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .rates {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .error {
+      color: #d00;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
   <h1>Пополнение баланса</h1>
-  <p>
-    Выберите криптовалюту и отправьте средства на указанный адрес.
-    После подтверждения в сети баланс будет зачислен автоматически.
-  </p>
+  <p>Выберите криптовалюту и отправьте средства на указанный адрес. После подтверждения в сети баланс будет зачислен автоматически.</p>
 
   <div class="card">
     <h2>Актуальные курсы</h2>
-    <div id="rates" class="loading">Загрузка...</div>
+    <div class="rates" id="rates">
+      Курсы временно недоступны
+    </div>
   </div>
 
   <div class="card">
     <h2>Кошельки</h2>
-    <div class="grid">
+    <div class="wallets">
+
       <div class="wallet">
         <h3>BTC</h3>
-        <div class="addr">bc1qlgf034j5nhgh0ltsqnhrepchlxwlykrttjuvpq</div>
+        <div class="address">bc1qlgf034j5nhqh0ltsqnhrepchlxwlykrtujvupq</div>
+        <div class="copy" onclick="copy(this)">Скопировать</div>
       </div>
+
       <div class="wallet">
         <h3>ETH</h3>
-        <div class="addr">0x5Fc25f19E18Dfc7d19595cB7d1eB0D0605b9A3FA</div>
+        <div class="address">0x5Fc25f19E18Dfc7d19595cB7d1eB0D0605b9A3FA</div>
+        <div class="copy" onclick="copy(this)">Скопировать</div>
       </div>
+
       <div class="wallet">
         <h3>USDT</h3>
-        <div class="addr">TMM1xGXxAY9R66hGPxKNfxo81KrmdyrszE</div>
+        <div class="address">TMM1xGXxAY9R66hGPxKNfxo81KrmdyrszE</div>
+        <div class="copy" onclick="copy(this)">Скопировать</div>
       </div>
+
       <div class="wallet">
         <h3>TON</h3>
-        <div class="addr">UQD-XSYf6P-NyjbSJYDHSgHnk0e5CiJQ2-NCZddro_5-c8B4</div>
+        <div class="address">UQD-XSYf6P-NyjbSJYDHsgHnk0e5CiJQ2-NCZddro_5-c8B4</div>
+        <div class="copy" onclick="copy(this)">Скопировать</div>
       </div>
+
     </div>
   </div>
 
-  <div id="error" class="error"></div>
 </div>
 
 <script>
-const API_BASE = "https://applestore-backend-production.up.railway.app";
-
-async function loadRates() {
-  try {
-    const res = await fetch(API_BASE + "/api/rates");
-    if (!res.ok) throw new Error("Backend не отвечает");
-    const data = await res.json();
-
-    document.getElementById("rates").innerHTML = `
-      BTC: $${data.BTC}<br>
-      ETH: $${data.ETH}<br>
-      USDT: $${data.USDT}<br>
-      TON: $${data.TON}
-    `;
-  } catch (e) {
-    document.getElementById("rates").innerHTML = "Курсы недоступны";
-    document.getElementById("error").textContent =
-      "Ошибка загрузки данных. Backend недоступен.";
+  function copy(el) {
+    const text = el.previousElementSibling.innerText;
+    navigator.clipboard.writeText(text);
+    el.innerText = 'Скопировано';
+    setTimeout(() => el.innerText = 'Скопировать', 1500);
   }
-}
-
-loadRates();
 </script>
 
 </body>
