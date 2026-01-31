@@ -1,89 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Пополнение</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="converter.js"></script>
-    <script defer src="telegram.js"></script>
-</head>
-<body>
+<h1>Пополнение баланса</h1>
+<div id="deposit"></div>
 
-<header class="header">
-    <a href="index.html" class="logo"> Apple Store</a>
-    <nav>
-        <a href="index.html">Магазин</a>
-        <a href="deposit.html" class="active">Пополнить</a>
-        <a href="cabinet.html">Кабинет</a>
-        <a href="reviews.html">Отзывы</a>
-        <a href="faq.html">FAQ</a>
-    </nav>
-</header>
+<script type="module">
+  import { getDepositData } from "./frontend/api.js";
 
-<main class="container">
-    <h1>Пополнение баланса</h1>
+  const container = document.getElementById("deposit");
+  const data = await getDepositData();
 
-    <div class="wallets">
-
-        <div class="wallet">
-            <h3>BTC</h3>
-            <p>bc1qlgf034j5nhqh0ltsqnhrepchlxwlykrtujvupq</p>
-            <img src="" id="qr-btc">
-        </div>
-
-        <div class="wallet">
-            <h3>ETH</h3>
-            <p>0x5Fc25f19E18Dfc7d19595cB7d1eB0D0605b9A3FA</p>
-            <img src="" id="qr-eth">
-        </div>
-
-        <div class="wallet">
-            <h3>USDT</h3>
-            <p>TMM1xGXxAY9R66hGPxKNfxo81KrmdyrszE</p>
-            <img src="" id="qr-usdt">
-        </div>
-
-        <div class="wallet">
-            <h3>TON</h3>
-            <p>UQD-XSYf6P-NyjbSJYDHsgHnk0e5CiJQ2-NCZddro_5-c8B4</p>
-            <img src="" id="qr-ton">
-        </div>
-
-    </div>
-
-    <button onclick="notifyPayment()">Я оплатил</button>
-
-    <h2>Конвертер валют</h2>
-    <div class="converter">
-        <input type="number" id="amount" placeholder="Сумма">
-        <select id="currency">
-            <option value="btc">BTC</option>
-            <option value="eth">ETH</option>
-            <option value="usdt">USDT</option>
-            <option value="ton">TON</option>
-            <option value="rub">RUB</option>
-        </select>
-        <button onclick="convert()">Конвертировать</button>
-        <p id="result"></p>
-    </div>
-
-</main>
-
-<footer>© 2026 Apple Store</footer>
-
-<script>
-const wallets = {
-  btc: "bc1qlgf034j5nhqh0ltsqnhrepchlxwlykrtujvupq",
-  eth: "0x5Fc25f19E18Dfc7d19595cB7d1eB0D0605b9A3FA",
-  usdt: "TMM1xGXxAY9R66hGPxKNfxo81KrmdyrszE",
-  ton: "UQD-XSYf6P-NyjbSJYDHsgHnk0e5CiJQ2-NCZddro_5-c8B4"
-}
-
-for (let k in wallets) {
-  document.getElementById(`qr-${k}`).src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${wallets[k]}`
-}
+  Object.entries(data).forEach(([coin, info]) => {
+    const block = document.createElement("div");
+    block.innerHTML = `
+      <h2>${coin}</h2>
+      <p>${info.address}</p>
+      <img src="${info.qr}" width="200">
+      <p>1 ${coin} ≈ ${info.rateRub} ₽</p>
+      <hr>
+    `;
+    container.appendChild(block);
+  });
 </script>
-
-</body>
-</html>
