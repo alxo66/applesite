@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="description" content="Личный кабинет: баланс, заказы и история транзакций.">
+<title>Кабинет — Cyber Market</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/ru/" class="logo">
+                <i class="fas fa-user-shield"></i>
+                <span>CYBER MARKET</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="/ru/"><i class="fas fa-home"></i> Магазин</a>
+                <a href="/ru/deposit.html"><i class="fas fa-wallet"></i> Пополнить</a>
+                <a href="/ru/cabinet.html" class="active"><i class="fas fa-user"></i> Кабинет</a>
+                <a href="#" class="balance-btn">
+                    <i class="fas fa-coins"></i>
+                    <span id="balance">0.00$</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="cabinet-page">
+        <div class="container">
+            <div class="page-header">
+                <h1><i class="fas fa-user-shield"></i> Личный кабинет</h1>
+                <p>Управляйте своим балансом и просматривайте свою активность</p>
+            </div>
+            
+            <div class="cabinet-grid">
+                <!-- Статистика -->
+                <div class="stats-cards">
+                    <div class="stat-card primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Текущий баланс</h3>
+                            <div class="stat-value" id="currentБаланс">0.00$</div>
+                        </div>
+                        <a href="/ru/deposit.html" class="stat-action">
+                            <i class="fas fa-plus"></i> Пополнить
+                        </a>
+                    </div>
+                    
+                    <div class="stat-card success">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Покупок всего</h3>
+                            <div class="stat-value" id="totalPurchases">0</div>
+                        </div>
+                        <a href="/ru/" class="stat-action">
+                            <i class="fas fa-store"></i> Магазин
+                        </a>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>С нами с</h3>
+                            <div class="stat-value">Сегодня</div>
+                        </div>
+                        <div class="stat-action">
+                            <i class="fas fa-clock"></i> Active
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Быстрые действия -->
+                <div class="quick-actions">
+                    <h3><i class="fas fa-bolt"></i> Быстрые действия</h3>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="location.href='/ru/deposit.html'">
+                            <i class="fas fa-wallet"></i>
+                            <span>Пополнение баланса</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="location.href='/ru/'">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Заказать услугу</span>
+                        </button>
+                        
+                        <button class="action-btn" onclick="showSupport()">
+                            <i class="fas fa-headset"></i>
+                            <span>Поддержка</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- История операций -->
+                <div class="transaction-history">
+                    <div class="section-header">
+                        <h3><i class="fas fa-history"></i> История операций</h3>
+                        <button class="btn-secondary" onclick="clearHistory()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    
+                    <div class="transactions-list" id="transactionHistory">
+                        <!-- История загружается через JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Активные заказы -->
+                <div class="active-orders">
+                    <div class="section-header">
+                        <h3><i class="fas fa-box-open"></i> Активные заказы</h3>
+                    </div>
+                    
+                    <div class="orders-list" id="activeOrders">
+                        <div class="empty-state">
+                            <i class="fas fa-box-open fa-3x"></i>
+                            <h4>Нет активных заказов</h4>
+                            <p>Купите первую услугу в <a href="/ru/">магазине</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Информация о безопасности -->
+            <div class="security-info">
+                <h3><i class="fas fa-shield-alt"></i> Безопасность аккаунта</h3>
+                
+                <div class="security-tips">
+                    <div class="tip">
+                        <i class="fas fa-key"></i>
+                        <div>
+                            <h4>Сохраняйте ваши данные в безопасности</h4>
+                            <p>Никогда никому не сообщайте данные для входа в панель управления вашей учетной записью</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip">
+                        <i class="fas fa-user-secret"></i>
+                        <div>
+                            <h4>Гарантированная конфиденциальность</h4>
+                            <p>Мы не храним ваши персональные данные или IP-адреса</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tip">
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <h4>Криптографическая защита</h4>
+                            <p>Все транзакции защищены с помощью блокчейн-технологий
+</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/script.js"></script>
+    <script>
+    // Дополнительные функции для кабинета
+    function showSupport() {
+        alert('📞 Служба поддержки доступна в Telegram: @cyber_support_bot\n⏰ Типичное время ответа: 5-15 минут');
+    }
+    
+    function clearHistory() {
+        if (confirm('Clear the entire transaction history?')) {
+            localStorage.setItem('cyberTransactions', JSON.stringify([]));
+            loadTransactionHistory();
+        }
+    }
+    
+    // Инициализация кабинета
+    document.addEventListener('DOMContentLoaded', function() {
+        // Подсчет покупок
+        const transactions = JSON.parse(localStorage.getItem('cyberTransactions') || '[]');
+        const purchases = transactions.filter(t => t.type === 'purchase').length;
+        document.getElementById('totalPurchases').textContent = purchases;
+        
+        // Кнопка вывода
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        if (withdrawBtn) {
+            withdrawBtn.addEventListener('click', function() {
+                const balance = parseFloat(localStorage.getItem('cyberБаланс') || '0');
+                
+                if (balance < 50) {
+                    alert('Minimum withdrawal amount is $50');
+                    return;
+                }
+                
+                if (confirm(`Request withdrawal ${balance}$ to your crypto wallet?\nВ обработке takes 1–3 business days.`)) {
+                    // Добавляем транзакцию на вывод
+                    const transactions = JSON.parse(localStorage.getItem('cyberTransactions') || '[]');
+                    transactions.unshift({
+                        type: 'withdraw',
+                        amount: -balance,
+                        description: `Withdrawal request ${balance}$`,
+                        date: new Date().toISOString(),
+                        status: 'pending'
+                    });
+                    
+                    localStorage.setItem('cyberTransactions', JSON.stringify(transactions));
+                    
+                    // Обнуляем баланс
+                    localStorage.setItem('cyberБаланс', '0');
+                    
+                    // Обновляем отображение
+                    document.getElementById('balance').textContent = '0.00$';
+                    document.getElementById('currentБаланс').textContent = '0.00$';
+                    loadTransactionHistory();
+                    
+                    alert('✅ Withdrawal request sent!\nFunds will be transferred within 1–3 business days.');
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
