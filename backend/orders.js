@@ -1,43 +1,22 @@
-import { sendTelegram } from "./telegram.js";
+exports.create = (req, res) => {
+  const { product, price } = req.body;
 
-const orders = [];
+  if (req.user.balance < price) {
+    return res.json({ success: false, error: "NO_FUNDS" });
+  }
 
-export function createOrder(order) {
-  const newOrder = {
-    id: Date.now(),
-    product: order.product,
-    amount: order.amount,
-    currency: order.currency,
-    status: "pending"
+  req.user.balance -= price;
+
+  const order = {
+    product,
+    price,
+    date: Date.now()
   };
 
-  orders.push(newOrder);
+  req.user.orders.push(order);
+  res.json({ success: true });
+};
 
-  sendTelegram(
-    `🛒 Новый заказ\n` +
-    `Товар: ${order.product}\n` +
-    `Сумма: ${order.amount}\n` +
-    `Валюта: ${order.currency}\n` +
-    `Статус: Ожидает оплату`
-  );
-
-  return newOrder;
-}
-
-export function markPaid(orderId) {
-  const order = orders.find(o => o.id === orderId);
-  if (!order) return null;
-
-  order.status = "paid";
-
-  sendTelegram(
-    `✅ Заказ #${order.id} оплачен\n` +
-    `Товар: ${order.product}`
-  );
-
-  return order;
-}
-
-export function getOrders() {
-  return orders;
-}
+exports.list = (req, res) => {
+  res.json(req.user.orders);
+};
