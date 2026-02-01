@@ -1,206 +1,237 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Личный кабинет — AppleStore</title>
-  <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; }
-    body { margin: 0; background: #f5f5f7; color: #111; }
-    .container { max-width: 900px; margin: 0 auto; padding: 16px; }
-    h1 { margin-bottom: 16px; }
+<meta charset="UTF-8">
+<title>Личный кабинет</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
-.card {
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  background: #f5f6f8;
+  color: #111;
+}
+
+header {
   background: #fff;
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 6px 20px rgba(0,0,0,.06);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
 }
 
-.balance {
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.muted { color: #777; font-size: 14px; }
-
-label { display: block; margin: 12px 0 4px; }
-input, select, button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-}
-
-button {
-  background: #000;
-  color: #fff;
-  border: none;
-  margin-top: 12px;
-  cursor: pointer;
-}
-
-button:disabled { opacity: .6; }
-
-.list { margin-top: 8px; }
-.item {
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-
-.status {
+header a {
+  margin-left: 16px;
+  text-decoration: none;
+  color: #000;
   font-weight: 500;
 }
 
-.status.pending { color: orange; }
-.status.done { color: green; }
-.status.reserved { color: #007aff; }
-.status.completed { color: green; }
-
-@media (max-width: 600px) {
-  .balance { font-size: 26px; }
+.container {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 0 20px;
 }
-```
 
-  </style>
+.card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.05);
+}
+
+h1 { margin-top: 0; }
+h2 { margin-bottom: 12px; }
+
+.balance {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.muted { color: #666; font-size: 14px; }
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item:last-child { border-bottom: none; }
+
+.cart-total {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 16px;
+}
+
+button {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.primary {
+  background: #0071e3;
+  color: #fff;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.danger {
+  background: #000;
+  color: #fff;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.status {
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.status.reserved { background: #fff4cc; }
+.status.completed { background: #dff7e3; }
+</style>
 </head>
-<body>
-  <div class="container">
-    <h1>Личный кабинет</h1>
 
-```
+<body>
+
+<header>
+  <strong>🍎 Apple Store</strong>
+  <nav>
+    <a href="/">Магазин</a>
+    <a href="/cabinet">Кабинет</a>
+  </nav>
+</header>
+
+<div class="container">
+
+<h1>Личный кабинет</h1>
+
 <!-- BALANCE -->
 <div class="card">
-  <div class="muted">Баланс</div>
+  <h2>Баланс</h2>
   <div class="balance" id="balance">—</div>
-  <div class="muted">Зарезервировано: <span id="reserved">—</span></div>
+  <div class="muted">Зарезервировано: <span id="reserved">0</span> ₽</div>
 </div>
 
-<!-- DEPOSIT -->
+<!-- CART -->
 <div class="card">
-  <h3>Пополнить баланс</h3>
-
-  <label>Сумма</label>
-  <input id="amount" type="number" min="1" placeholder="Введите сумму" />
-
-  <label>Валюта</label>
-  <select id="asset">
-    <option value="USDT">USDT</option>
-    <option value="BTC">BTC</option>
-    <option value="ETH">ETH</option>
-  </select>
-
-  <button onclick="createInvoice()">Оплатить</button>
-</div>
-
-<!-- DEPOSITS -->
-<div class="card">
-  <h3>История пополнений</h3>
-  <div class="list" id="deposits"></div>
+  <h2>Корзина</h2>
+  <div id="cart"></div>
+  <div class="cart-total" id="total"></div>
+  <button class="primary" onclick="checkout()">Оформить заказ</button>
 </div>
 
 <!-- ORDERS -->
 <div class="card">
-  <h3>Заказы</h3>
-  <div class="list" id="orders"></div>
+  <h2>Мои заказы</h2>
+  <div id="orders"></div>
 </div>
-```
 
-  </div>
+</div>
 
-  <script>
-    const API = "https://applestore-backend-production.up.railway.app";
+<script>
+const API = "https://applestore-backend-production.up.railway.app/api";
+const CART_KEY = "apple_cart";
 
-    async function loadCabinet() {
-      const res = await fetch(API + "/api/cabinet");
-      const data = await res.json();
+let cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
-      document.getElementById("balance").innerText = data.balance;
-      document.getElementById("reserved").innerText = data.reserved;
+async function loadCabinet() {
+  const res = await fetch(API + "/cabinet");
+  const data = await res.json();
 
-      // deposits
-      const depBox = document.getElementById("deposits");
-      depBox.innerHTML = "";
-      data.deposits.slice().reverse().forEach(d => {
-        depBox.innerHTML += `
-          <div class="item">
-            ${d.amount} ${d.asset} —
-            <span class="status ${d.status}">${d.status}</span>
-          </div>`;
-      });
+  document.getElementById("balance").innerText =
+    data.balance.toLocaleString() + " ₽";
+  document.getElementById("reserved").innerText =
+    data.reserved.toLocaleString();
 
-      // orders
-      const ordBox = document.getElementById("orders");
-      ordBox.innerHTML = "";
-      data.orders.slice().reverse().forEach(o => {
-        ordBox.innerHTML += `
-          <div class="item">
-            ${o.product} — ${o.price}$ —
-            <span class="status ${o.status}">${o.status}</span>
-          </div>`;
-      });
-    }
+  renderCart();
+  renderOrders(data.orders);
+}
 
-    async function createInvoice() {
-      const amount = document.getElementById("amount").value;
-      const asset = document.getElementById("asset").value;
+function renderCart() {
+  const el = document.getElementById("cart");
+  el.innerHTML = "";
 
-      if (!amount) return alert("Введите сумму");
+  if (!cart.length) {
+    el.innerHTML = "<div class='muted'>Корзина пуста</div>";
+    document.getElementById("total").innerText = "";
+    return;
+  }
 
-      const res = await fetch(API + "/api/crypto/invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, asset })
-      });
+  let total = 0;
 
-      const data = await res.json();
-      if (data.pay_url) {
-        window.open(data.pay_url, "_blank");
-      } else {
-        alert("Ошибка создания счёта");
-      }
-    }
-
-    loadCabinet();
-    setInterval(loadCabinet, 5000);
-  </script>
-
-</body>
-</html>
-<script type="module">
-import { getCart, clearCart, createOrder } from "./frontend/api.js";
-
-const cartDiv = document.getElementById("cart");
-const cart = getCart();
-
-if (!cart.length) {
-  cartDiv.innerText = "Корзина пуста";
-} else {
   cart.forEach(p => {
-    const d = document.createElement("div");
-    d.innerText = `${p.title} — ${p.price} ₽`;
-    cartDiv.appendChild(d);
+    total += p.price;
+    el.innerHTML += `
+      <div class="cart-item">
+        <div>${p.title}</div>
+        <div>${p.price.toLocaleString()} ₽</div>
+      </div>
+    `;
+  });
+
+  document.getElementById("total").innerText =
+    "Итого: " + total.toLocaleString() + " ₽";
+}
+
+async function checkout() {
+  if (!cart.length) return alert("Корзина пуста");
+
+  for (const item of cart) {
+    const res = await fetch(API + "/order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product: item.title,
+        price: item.price
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) return alert(data.error);
+  }
+
+  localStorage.removeItem(CART_KEY);
+  cart = [];
+  alert("Заказ оформлен");
+  loadCabinet();
+}
+
+function renderOrders(orders) {
+  const el = document.getElementById("orders");
+  el.innerHTML = "";
+
+  if (!orders.length) {
+    el.innerHTML = "<div class='muted'>Нет заказов</div>";
+    return;
+  }
+
+  orders.forEach(o => {
+    el.innerHTML += `
+      <div class="cart-item">
+        <div>
+          ${o.product}<br>
+          <span class="status ${o.status}">${o.status}</span>
+        </div>
+        <div>${o.price.toLocaleString()} ₽</div>
+      </div>
+    `;
   });
 }
 
-window.checkout = async () => {
-  for (const p of cart) {
-    const res = await createOrder({
-      product: p.title,
-      price: p.price
-    });
-    if (res.error) {
-      alert(res.error);
-      return;
-    }
-  }
-  clearCart();
-  alert("Заказ оформлен");
-  location.reload();
-};
+loadCabinet();
 </script>
+
+</body>
+</html>
