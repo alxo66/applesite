@@ -3,190 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <title>Личный кабинет</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-  background: #f5f6f8;
-  color: #111;
+  font-family: -apple-system;
+  background: #f5f5f7;
 }
-
-.container {
-  max-width: 1100px;
+.wrap {
+  max-width: 1000px;
   margin: 40px auto;
-  padding: 0 20px;
 }
-
-h1 {
-  font-size: 36px;
-  margin-bottom: 24px;
-}
-
 .card {
   background: #fff;
-  border-radius: 16px;
   padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-}
-
-.balance {
-  font-size: 42px;
-  font-weight: bold;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
-}
-
-th {
-  font-weight: 600;
-  color: #666;
-}
-
-.status-ok {
-  color: #1a7f37;
-  font-weight: 500;
-}
-
-.status-pending {
-  color: #d97706;
-  font-weight: 500;
-}
-
-.empty {
-  color: #888;
-  text-align: center;
-  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
+<div class="wrap">
 
-<h1>Личный кабинет</h1>
-
-<!-- БАЛАНС -->
 <div class="card">
-  <h2>Баланс</h2>
-  <div class="balance" id="balance">—</div>
+<h2>Баланс</h2>
+<div id="balance"></div>
+<div id="reserved"></div>
 </div>
 
-<!-- ПОПОЛНЕНИЯ -->
 <div class="card">
-  <h2>История пополнений</h2>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Дата</th>
-        <th>Валюта</th>
-        <th>Сумма</th>
-        <th>Статус</th>
-      </tr>
-    </thead>
-    <tbody id="deposits">
-      <tr><td colspan="4" class="empty">Загрузка...</td></tr>
-    </tbody>
-  </table>
+<h2>История пополнений</h2>
+<ul id="deps"></ul>
 </div>
 
-<!-- ПОКУПКИ -->
 <div class="card">
-  <h2>Покупки</h2>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Дата</th>
-        <th>Товар</th>
-        <th>Цена</th>
-        <th>Статус</th>
-      </tr>
-    </thead>
-    <tbody id="orders">
-      <tr><td colspan="4" class="empty">Загрузка...</td></tr>
-    </tbody>
-  </table>
+<h2>Заказы</h2>
+<ul id="orders"></ul>
 </div>
 
 </div>
 
 <script>
-const API_BASE = "https://applestore-backend-production.up.railway.app/api";
+async function load() {
+  const r = await fetch(
+    "https://applestore-backend-production.up.railway.app/api/cabinet"
+  );
+  const d = await r.json();
 
-async function loadCabinet() {
-  try {
-    /* БАЛАНС */
-    const balanceRes = await fetch(API_BASE + "/balance");
-    const balanceData = await balanceRes.json();
-    document.getElementById("balance").innerText =
-      balanceData.balance.toLocaleString() + " ₽";
+  balance.innerText = "Баланс: $" + d.balance;
+  reserved.innerText = "В резерве: $" + d.reserved;
 
-    /* ПОПОЛНЕНИЯ */
-    const depRes = await fetch(API_BASE + "/deposits");
-    const deposits = await depRes.json();
-    const depBody = document.getElementById("deposits");
-    depBody.innerHTML = "";
+  deps.innerHTML = d.deposits.map(
+    x => `<li>${x.amount} ${x.asset} — ${x.status}</li>`
+  ).join("");
 
-    if (!deposits.length) {
-      depBody.innerHTML =
-        "<tr><td colspan='4' class='empty'>Нет пополнений</td></tr>";
-    } else {
-      deposits.forEach(d => {
-        depBody.innerHTML += `
-          <tr>
-            <td>${new Date(d.date).toLocaleString()}</td>
-            <td>${d.currency}</td>
-            <td>${d.amount.toLocaleString()} ₽</td>
-            <td class="${d.status === "done" ? "status-ok" : "status-pending"}">
-              ${d.status}
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    /* ПОКУПКИ */
-    const ordRes = await fetch(API_BASE + "/orders");
-    const orders = await ordRes.json();
-    const ordBody = document.getElementById("orders");
-    ordBody.innerHTML = "";
-
-    if (!orders.length) {
-      ordBody.innerHTML =
-        "<tr><td colspan='4' class='empty'>Покупок ещё нет</td></tr>";
-    } else {
-      orders.forEach(o => {
-        ordBody.innerHTML += `
-          <tr>
-            <td>${new Date(o.date).toLocaleString()}</td>
-            <td>${o.name}</td>
-            <td>${o.price.toLocaleString()} ₽</td>
-            <td class="status-ok">Оплачено</td>
-          </tr>
-        `;
-      });
-    }
-
-  } catch (e) {
-    console.error(e);
-    alert("Ошибка подключения к backend");
-  }
+  orders.innerHTML = d.orders.map(
+    o => `<li>${o.product} — ${o.status}</li>`
+  ).join("");
 }
-
-loadCabinet();
+load();
 </script>
-
 </body>
 </html>
