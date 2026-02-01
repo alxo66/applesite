@@ -74,3 +74,11 @@
 
 </body>
 </html>
+<script type="module">
+import { PRODUCTS, addToCart } from "./frontend/api.js";
+
+window.buyProduct = (id) => {
+  const product = PRODUCTS.find(p => p.id === id);
+  addToCart(product);
+};
+</script>
