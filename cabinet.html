@@ -172,3 +172,35 @@ button:disabled { opacity: .6; }
 
 </body>
 </html>
+<script type="module">
+import { getCart, clearCart, createOrder } from "./frontend/api.js";
+
+const cartDiv = document.getElementById("cart");
+const cart = getCart();
+
+if (!cart.length) {
+  cartDiv.innerText = "Корзина пуста";
+} else {
+  cart.forEach(p => {
+    const d = document.createElement("div");
+    d.innerText = `${p.title} — ${p.price} ₽`;
+    cartDiv.appendChild(d);
+  });
+}
+
+window.checkout = async () => {
+  for (const p of cart) {
+    const res = await createOrder({
+      product: p.title,
+      price: p.price
+    });
+    if (res.error) {
+      alert(res.error);
+      return;
+    }
+  }
+  clearCart();
+  alert("Заказ оформлен");
+  location.reload();
+};
+</script>
