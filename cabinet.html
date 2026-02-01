@@ -2,16 +2,14 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Личный кабинет</title>
+<title>Кабинет</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-* { box-sizing: border-box; }
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
   background: #f5f6f8;
-  color: #111;
 }
 
 header {
@@ -19,177 +17,141 @@ header {
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   box-shadow: 0 2px 10px rgba(0,0,0,.05);
 }
 
 header a {
-  margin-left: 16px;
   text-decoration: none;
+  margin-left: 16px;
   color: #000;
   font-weight: 500;
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 900px;
   margin: 32px auto;
   padding: 0 20px;
 }
 
 .card {
   background: #fff;
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 24px;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,.05);
 }
 
-h1 { margin-top: 0; }
-h2 { margin-bottom: 12px; }
-
-.balance {
-  font-size: 36px;
-  font-weight: bold;
+h2 {
+  margin-top: 0;
 }
 
-.muted { color: #666; font-size: 14px; }
-
-.cart-item {
+.item {
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
 }
 
-.cart-item:last-child { border-bottom: none; }
-
-.cart-total {
+.total {
   font-size: 20px;
   font-weight: bold;
-  margin-top: 16px;
 }
 
 button {
   padding: 14px;
   border: none;
   border-radius: 12px;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.primary {
   background: #0071e3;
   color: #fff;
+  font-size: 15px;
+  cursor: pointer;
   width: 100%;
   margin-top: 16px;
 }
 
 .danger {
-  background: #000;
-  color: #fff;
-  width: 100%;
-  margin-top: 12px;
+  background: #ff3b30;
 }
-
-.status {
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  display: inline-block;
-}
-
-.status.reserved { background: #fff4cc; }
-.status.completed { background: #dff7e3; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <strong>🍎 Apple Store</strong>
+  <strong>🍎 Кабинет</strong>
   <nav>
     <a href="/">Магазин</a>
-    <a href="/cabinet">Кабинет</a>
+    <a href="/deposit.html">Пополнить</a>
   </nav>
 </header>
 
 <div class="container">
 
-<h1>Личный кабинет</h1>
+  <div class="card">
+    <h2>Баланс</h2>
+    <div id="balance">Загрузка...</div>
+  </div>
 
-<!-- BALANCE -->
-<div class="card">
-  <h2>Баланс</h2>
-  <div class="balance" id="balance">—</div>
-  <div class="muted">Зарезервировано: <span id="reserved">0</span> ₽</div>
-</div>
-
-<!-- CART -->
-<div class="card">
-  <h2>Корзина</h2>
-  <div id="cart"></div>
-  <div class="cart-total" id="total"></div>
-  <button class="primary" onclick="checkout()">Оформить заказ</button>
-</div>
-
-<!-- ORDERS -->
-<div class="card">
-  <h2>Мои заказы</h2>
-  <div id="orders"></div>
-</div>
+  <div class="card">
+    <h2>Корзина</h2>
+    <div id="cart"></div>
+    <div class="total" id="total"></div>
+    <button id="orderBtn">Оформить заказ</button>
+    <button class="danger" id="clearBtn">Очистить корзину</button>
+  </div>
 
 </div>
 
 <script>
-const API = "https://applestore-backend-production.up.railway.app/api";
+const API = "https://applestore-backend-production.up.railway.app";
 const CART_KEY = "apple_cart";
 
 let cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
 
-async function loadCabinet() {
-  const res = await fetch(API + "/cabinet");
-  const data = await res.json();
-
-  document.getElementById("balance").innerText =
-    data.balance.toLocaleString() + " ₽";
-  document.getElementById("reserved").innerText =
-    data.reserved.toLocaleString();
-
-  renderCart();
-  renderOrders(data.orders);
-}
-
 function renderCart() {
-  const el = document.getElementById("cart");
-  el.innerHTML = "";
+  const root = document.getElementById("cart");
+  const totalEl = document.getElementById("total");
+  root.innerHTML = "";
 
   if (!cart.length) {
-    el.innerHTML = "<div class='muted'>Корзина пуста</div>";
-    document.getElementById("total").innerText = "";
+    root.innerHTML = "<p>Корзина пустая</p>";
+    totalEl.textContent = "";
     return;
   }
 
-  let total = 0;
+  let sum = 0;
 
-  cart.forEach(p => {
-    total += p.price;
-    el.innerHTML += `
-      <div class="cart-item">
-        <div>${p.title}</div>
-        <div>${p.price.toLocaleString()} ₽</div>
-      </div>
+  cart.forEach((p, i) => {
+    sum += p.price;
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <span>${p.title}</span>
+      <span>${p.price.toLocaleString()} ₽</span>
     `;
+    root.appendChild(div);
   });
 
-  document.getElementById("total").innerText =
-    "Итого: " + total.toLocaleString() + " ₽";
+  totalEl.textContent = "Итого: " + sum.toLocaleString() + " ₽";
 }
 
-async function checkout() {
-  if (!cart.length) return alert("Корзина пуста");
+async function loadBalance() {
+  const r = await fetch(API + "/api/cabinet");
+  const data = await r.json();
+
+  document.getElementById("balance").innerHTML = `
+    Доступно: <b>${data.balance} ₽</b><br>
+    Зарезервировано: ${data.reserved} ₽
+  `;
+}
+
+document.getElementById("orderBtn").onclick = async () => {
+  if (!cart.length) {
+    alert("Корзина пустая");
+    return;
+  }
 
   for (const item of cart) {
-    const res = await fetch(API + "/order", {
+    const r = await fetch(API + "/api/order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -198,39 +160,28 @@ async function checkout() {
       })
     });
 
-    const data = await res.json();
-    if (!res.ok) return alert(data.error);
+    const res = await r.json();
+    if (res.error) {
+      alert(res.error);
+      return;
+    }
   }
 
+  alert("Заказ оформлен. Средства зарезервированы.");
   localStorage.removeItem(CART_KEY);
   cart = [];
-  alert("Заказ оформлен");
-  loadCabinet();
-}
+  renderCart();
+  loadBalance();
+};
 
-function renderOrders(orders) {
-  const el = document.getElementById("orders");
-  el.innerHTML = "";
+document.getElementById("clearBtn").onclick = () => {
+  localStorage.removeItem(CART_KEY);
+  cart = [];
+  renderCart();
+};
 
-  if (!orders.length) {
-    el.innerHTML = "<div class='muted'>Нет заказов</div>";
-    return;
-  }
-
-  orders.forEach(o => {
-    el.innerHTML += `
-      <div class="cart-item">
-        <div>
-          ${o.product}<br>
-          <span class="status ${o.status}">${o.status}</span>
-        </div>
-        <div>${o.price.toLocaleString()} ₽</div>
-      </div>
-    `;
-  });
-}
-
-loadCabinet();
+renderCart();
+loadBalance();
 </script>
 
 </body>
