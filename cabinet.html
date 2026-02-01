@@ -1,267 +1,174 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<title>Личный кабинет</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Личный кабинет — AppleStore</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto; }
+    body { margin: 0; background: #f5f5f7; color: #111; }
+    .container { max-width: 900px; margin: 0 auto; padding: 16px; }
+    h1 { margin-bottom: 16px; }
 
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-  background: #f4f5f7;
-  color: #111;
-}
-
-.container {
-  max-width: 1100px;
-  margin: 32px auto;
-  padding: 0 16px;
-}
-
-h1 {
-  font-size: 34px;
-  margin-bottom: 24px;
-}
-
+```
 .card {
   background: #fff;
-  border-radius: 18px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-}
-
-.card h2 {
-  margin-top: 0;
+  border-radius: 14px;
+  padding: 16px;
   margin-bottom: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.06);
 }
 
 .balance {
-  font-size: 42px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 600;
 }
 
-.muted {
-  color: #777;
-  font-size: 14px;
-}
+.muted { color: #777; font-size: 14px; }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-@media (max-width: 800px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 500;
-}
-
-input, select {
+label { display: block; margin: 12px 0 4px; }
+input, select, button {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 10px;
   border: 1px solid #ddd;
   font-size: 16px;
 }
 
 button {
-  margin-top: 16px;
-  width: 100%;
-  padding: 16px;
-  border-radius: 14px;
-  border: none;
   background: #000;
   color: #fff;
-  font-size: 16px;
-  font-weight: 600;
+  border: none;
+  margin-top: 12px;
   cursor: pointer;
 }
 
-button:hover {
-  opacity: 0.9;
-}
+button:disabled { opacity: .6; }
 
-.wallet-box {
-  background: #f6f7f9;
-  border-radius: 14px;
-  padding: 16px;
-  word-break: break-all;
-}
-
-.wallet-box img {
-  display: block;
-  max-width: 180px;
-  margin: 12px auto 0;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 12px;
+.list { margin-top: 8px; }
+.item {
+  padding: 10px 0;
   border-bottom: 1px solid #eee;
-  text-align: left;
   font-size: 14px;
 }
 
-.status-done {
-  color: green;
+.status {
+  font-weight: 500;
 }
 
-.status-pending {
-  color: orange;
+.status.pending { color: orange; }
+.status.done { color: green; }
+.status.reserved { color: #007aff; }
+.status.completed { color: green; }
+
+@media (max-width: 600px) {
+  .balance { font-size: 26px; }
 }
-</style>
+```
+
+  </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="container">
+    <h1>Личный кабинет</h1>
 
-<h1>Личный кабинет</h1>
-
-<!-- БАЛАНС -->
+```
+<!-- BALANCE -->
 <div class="card">
-  <h2>Баланс</h2>
+  <div class="muted">Баланс</div>
   <div class="balance" id="balance">—</div>
-  <div class="muted">Обновляется автоматически</div>
+  <div class="muted">Зарезервировано: <span id="reserved">—</span></div>
 </div>
 
-<!-- ПОПОЛНЕНИЕ -->
+<!-- DEPOSIT -->
 <div class="card">
-  <h2>Пополнение баланса</h2>
+  <h3>Пополнить баланс</h3>
 
-  <div class="grid">
-    <div>
-      <label>Сумма (₽)</label>
-      <input id="amount" placeholder="Например: 5000" />
+  <label>Сумма</label>
+  <input id="amount" type="number" min="1" placeholder="Введите сумму" />
 
-      <label style="margin-top:12px;">Криптовалюта</label>
-      <select id="currency">
-        <option value="USDT">USDT</option>
-        <option value="BTC">BTC</option>
-        <option value="ETH">ETH</option>
-        <option value="TON">TON</option>
-      </select>
+  <label>Валюта</label>
+  <select id="asset">
+    <option value="USDT">USDT</option>
+    <option value="BTC">BTC</option>
+    <option value="ETH">ETH</option>
+  </select>
 
-      <button onclick="createDeposit()">Показать реквизиты</button>
-    </div>
+  <button onclick="createInvoice()">Оплатить</button>
+</div>
 
-    <div>
-      <div id="wallet" class="wallet-box">
-        Выберите сумму и валюту
-      </div>
-    </div>
+<!-- DEPOSITS -->
+<div class="card">
+  <h3>История пополнений</h3>
+  <div class="list" id="deposits"></div>
+</div>
+
+<!-- ORDERS -->
+<div class="card">
+  <h3>Заказы</h3>
+  <div class="list" id="orders"></div>
+</div>
+```
+
   </div>
-</div>
 
-<!-- ИСТОРИЯ -->
-<div class="card">
-  <h2>История пополнений</h2>
+  <script>
+    const API = "https://applestore-backend-production.up.railway.app";
 
-  <table>
-    <thead>
-      <tr>
-        <th>Дата</th>
-        <th>Валюта</th>
-        <th>Сумма</th>
-        <th>Статус</th>
-      </tr>
-    </thead>
-    <tbody id="history">
-      <tr><td colspan="4">Загрузка...</td></tr>
-    </tbody>
-  </table>
-</div>
+    async function loadCabinet() {
+      const res = await fetch(API + "/api/cabinet");
+      const data = await res.json();
 
-</div>
+      document.getElementById("balance").innerText = data.balance;
+      document.getElementById("reserved").innerText = data.reserved;
 
-<script>
-const API = "https://applestore-backend-production.up.railway.app/api";
+      // deposits
+      const depBox = document.getElementById("deposits");
+      depBox.innerHTML = "";
+      data.deposits.slice().reverse().forEach(d => {
+        depBox.innerHTML += `
+          <div class="item">
+            ${d.amount} ${d.asset} —
+            <span class="status ${d.status}">${d.status}</span>
+          </div>`;
+      });
 
-/* ===== БАЛАНС И ИСТОРИЯ ===== */
-async function loadCabinet() {
-  try {
-    const balanceRes = await fetch(API + "/balance");
-    const balance = await balanceRes.json();
-    document.getElementById("balance").innerText = balance.balance + " ₽";
-  } catch {
-    document.getElementById("balance").innerText = "—";
-  }
-
-  try {
-    const historyRes = await fetch(API + "/deposits");
-    const list = await historyRes.json();
-
-    const tbody = document.getElementById("history");
-    tbody.innerHTML = "";
-
-    if (!list.length) {
-      tbody.innerHTML = "<tr><td colspan='4'>Нет операций</td></tr>";
-      return;
+      // orders
+      const ordBox = document.getElementById("orders");
+      ordBox.innerHTML = "";
+      data.orders.slice().reverse().forEach(o => {
+        ordBox.innerHTML += `
+          <div class="item">
+            ${o.product} — ${o.price}$ —
+            <span class="status ${o.status}">${o.status}</span>
+          </div>`;
+      });
     }
 
-    list.forEach(d => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${new Date(d.date).toLocaleString()}</td>
-        <td>${d.currency}</td>
-        <td>${d.amount}</td>
-        <td class="${d.status === "done" ? "status-done" : "status-pending"}">
-          ${d.status}
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  } catch {
-    document.getElementById("history").innerHTML =
-      "<tr><td colspan='4'>Backend недоступен</td></tr>";
-  }
-}
+    async function createInvoice() {
+      const amount = document.getElementById("amount").value;
+      const asset = document.getElementById("asset").value;
 
-/* ===== ПОПОЛНЕНИЕ ===== */
-async function createDeposit() {
-  const amount = document.getElementById("amount").value;
-  const currency = document.getElementById("currency").value;
+      if (!amount) return alert("Введите сумму");
 
-  if (!amount) {
-    alert("Введите сумму");
-    return;
-  }
+      const res = await fetch(API + "/api/crypto/invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, asset })
+      });
 
-  try {
-    const res = await fetch(API + "/deposit");
-    const data = await res.json();
-    const w = data[currency];
+      const data = await res.json();
+      if (data.pay_url) {
+        window.open(data.pay_url, "_blank");
+      } else {
+        alert("Ошибка создания счёта");
+      }
+    }
 
-    document.getElementById("wallet").innerHTML = `
-      <b>${currency}</b><br><br>
-      ${w.address}
-      <img src="${w.qr}">
-      <div class="muted">Отправьте точную сумму и дождитесь подтверждения сети</div>
-    `;
-  } catch {
-    document.getElementById("wallet").innerText =
-      "Ошибка загрузки реквизитов";
-  }
-}
-
-loadCabinet();
-</script>
+    loadCabinet();
+    setInterval(loadCabinet, 5000);
+  </script>
 
 </body>
 </html>
