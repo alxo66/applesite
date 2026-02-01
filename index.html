@@ -7,6 +7,7 @@
 
 <style>
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
@@ -21,6 +22,10 @@ header {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+header strong {
+  font-size: 18px;
 }
 
 header a {
@@ -109,29 +114,43 @@ const products = [
     id: 1,
     title: "iPhone 16",
     price: 79990,
-    img: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-black-select",
-    desc: "Новый iPhone 16 с OLED-дисплеем, Face ID и мощным процессором."
+    img: "images/iphone-16.jpg",
+    desc: "Новый iPhone 16. OLED-дисплей, Face ID, мощный процессор."
   },
   {
     id: 2,
     title: "iPhone 16 Pro",
     price: 99990,
-    img: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-pro-black-titanium-select",
+    img: "images/iphone-16-pro.jpg",
     desc: "Pro-версия с камерой 48 Мп и титановым корпусом."
   },
   {
     id: 3,
     title: "iPhone 16 Pro Max",
     price: 109990,
-    img: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-pro-max-natural-titanium-select",
-    desc: "Максимальный экран, лучшая автономность и топ-камера."
+    img: "images/iphone-16-pro-max.jpg",
+    desc: "Максимальный экран, автономность и топ-камера."
   },
   {
     id: 4,
     title: "iPhone 15",
     price: 69990,
-    img: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-15-blue-select",
-    desc: "Отличный выбор: производительность, камера и дизайн."
+    img: "images/iphone-15.jpg",
+    desc: "Отличный баланс цены и возможностей."
+  },
+  {
+    id: 5,
+    title: "MacBook Air 13",
+    price: 119990,
+    img: "images/macbook-air-13.jpg",
+    desc: "Лёгкий, быстрый, идеален для работы и учебы."
+  },
+  {
+    id: 6,
+    title: "MacBook Pro 14",
+    price: 179990,
+    img: "images/macbook-pro-14.jpg",
+    desc: "Максимальная производительность для профессионалов."
   }
 ];
 
@@ -148,7 +167,7 @@ products.forEach(p => {
   const el = document.createElement("div");
   el.className = "card";
   el.innerHTML = `
-    <img src="${p.img}">
+    <img src="${p.img}" alt="${p.title}">
     <h3>${p.title}</h3>
     <div class="price">${p.price.toLocaleString()} ₽</div>
     <div class="desc">${p.desc}</div>
