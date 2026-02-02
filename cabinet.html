@@ -3,150 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Пополнение баланса — Apple Store</title>
+    <title>Личный кабинет | Apple Store</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Дополнительные стили специально для формы */
-        .deposit-card {
-            max-width: 500px;
-            margin: 40px auto;
-        }
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #86868b;
-        }
-        input, select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid #d2d2d7;
-            background: #fff;
-            font-size: 17px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        input:focus {
-            border-color: #0071e3;
-        }
-        .crypto-notice {
-            background: #f5f5f7;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #1d1d1f;
-        }
-    </style>
 </head>
 <body>
 
-    <header class="header">
-        <a href="index.html" class="logo">Apple Store</a>
-        <nav>
-            <a href="shop.html">Магазин</a>
-            <a href="cabinet.html">Кабинет</a>
-            <a href="deposit.html" class="active">Пополнить</a>
-        </nav>
-    </header>
+<header class="header">
+    <a href="index.html" class="logo">Apple Store</a>
+    <nav>
+        <a href="index.html">Магазин</a>
+        <a href="cabinet.html" class="active">Кабинет</a>
+        <a href="shipping.html">Доставка</a>
+    </nav>
+</header>
 
-    <div class="container">
-        <h1>Пополнение. <span>Мгновенное зачисление.</span></h1>
+<div class="container">
+    <h1>Личный кабинет. <span>Управляйте счетом.</span></h1>
 
-        <div class="product deposit-card">
-            <h2 style="margin-bottom: 20px; text-align: center;">Счёт на оплату</h2>
+    <div class="cabinet-grid">
+        <div class="cabinet-card balance-card">
+            <h3>Ваш баланс</h3>
+            <div class="balance-amount"><span id="user-balance">0.00</span> <span>USDT</span></div>
+            <p class="balance-id">ID пользователя: #77412</p>
+        </div>
+
+        <div class="cabinet-card deposit-card">
+            <h3>Пополнение счёта</h3>
+            <div class="input-group">
+                <label>Сумма пополнения ($)</label>
+                <input type="number" id="deposit-amount" placeholder="Например: 1000">
+            </div>
             
             <div class="input-group">
-                <label for="amount">Сумма пополнения ($)</label>
-                <input id="amount" type="number" placeholder="Например: 1000" min="500">
-            </div>
-
-            <div class="input-group">
-                <label for="asset">Выберите актив</label>
-                <select id="asset">
+                <label>Выберите актив</label>
+                <select id="asset-select">
                     <option value="USDT">USDT (Tether)</option>
+                    <option value="TON">TON</option>
                     <option value="BTC">Bitcoin</option>
-                    <option value="TON">TON (Toncoin)</option>
-                    <option value="ETH">Ethereum</option>
                 </select>
             </div>
 
-            <button id="payBtn" style="width: 100%; margin-top: 10px;">Создать инвойс</button>
+            <button class="buy-btn" id="create-invoice">Создать инвойс</button>
+            
+            <div class="bot-info">
+                <img src="https://img.icons8.com/color/48/telegram-app.png" alt="bot">
+                <p>Оплата через <b>CryptoBot</b>. Зачисление мгновенно после подтверждения.</p>
+            </div>
+        </div>
 
-            <div class="crypto-notice">
-                <span style="font-size: 20px;">🤖</span>
-                <p>Оплата производится через <b>CryptoBot</b>. Средства поступят на ваш баланс сразу после подтверждения транзакции.</p>
+        <div class="cabinet-card history-card" style="grid-column: 1 / -1;">
+            <h3>Последние операции</h3>
+            <div id="history-list">
+                <p class="empty-msg">У вас пока нет покупок или пополнений.</p>
             </div>
         </div>
     </div>
+</div>
 
-    <footer>
-        <p>Безопасные платежи через зашифрованные крипто-шлюзы.</p>
-    </footer>
+<footer>
+    <p>Copyright © 2026 Apple Store. Безопасные платежи через зашифрованные шлюзы.</p>
+</footer>
 
-    <script type="module">
-        // Импортируем API (путь API уже прописан внутри api.js)
-        const API = "https://applestore-backend-production.up.railway.app";
-        
-        // Функция для получения User ID из localStorage (как в api.js)
-        function getUserId() {
-            return localStorage.getItem("applestore_user_id") || "guest";
-        }
-
-        document.getElementById("payBtn").onclick = async () => {
-            const btn = document.getElementById("payBtn");
-            const amount = Number(document.getElementById("amount").value);
-            const asset = document.getElementById("asset").value;
-
-            if (!amount || amount < 100) {
-                alert("Минимальная сумма пополнения — 500 $");
-                return;
-            }
-
-            // Визуальный фидбек
-            btn.disabled = true;
-            btn.innerText = "Создание счёта...";
-
-            try {
-                const r = await fetch(`${API}/api/deposit`, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        "x-user-id": getUserId() // ВАЖНО для твоего бэкенда
-                    },
-                    body: JSON.stringify({
-                        amount,
-                        currency: asset // в бэкенде поле может называться currency или asset
-                    })
-                });
-
-                const data = await r.json();
-
-                if (data.pay_url) {
-                    // Перенаправляем на оплату в CryptoBot
-                    window.location.href = data.pay_url;
-                } else {
-                    alert("Ошибка: бэкенд не вернул ссылку на оплату.");
-                    btn.disabled = false;
-                    btn.innerText = "Создать инвойс";
-                }
-            } catch (e) {
-                console.error(e);
-                alert("Ошибка соединения с сервером Railway.");
-                btn.disabled = false;
-                btn.innerText = "Создать инвойс";
-            }
-        };
-    </script>
+<script type="module">
+    // Здесь будет логика загрузки баланса и создания инвойса
+    document.getElementById('create-invoice').onclick = () => {
+        const amount = document.getElementById('deposit-amount').value;
+        if (!amount || amount <= 0) return alert('Введите сумму');
+        alert('Инвойс на ' + amount + ' USDT создан в CryptoBot!');
+    };
+</script>
 
 </body>
 </html>
