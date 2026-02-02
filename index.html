@@ -20,7 +20,7 @@
 <div class="container">
     <h1>Магазин. <span>Лучшее от Apple.</span></h1>
     <div id="products" class="products">
-        <div style="text-align: center; grid-column: 1/-1; padding: 100px; opacity: 0.5;">
+        <div class="loader-container" style="grid-column: 1/-1; text-align: center; padding: 100px;">
             <p>Загрузка актуального ассортимента...</p>
         </div>
     </div>
@@ -32,9 +32,6 @@
 
 <script type="module">
     import { getProducts, createOrder } from './api.js';
-
-    // Функция-заглушка для битых картинок (используем надежный сервис placehold.jp)
-    const imgErr = "this.onerror=null;this.src='https://placehold.jp/24/0071e3/ffffff/300x300.png?text=Apple+Device';";
 
     async function loadProducts() {
         const container = document.getElementById("products");
@@ -63,10 +60,11 @@
 
                 items.forEach(p => {
                     const card = document.createElement("div");
-                    card.className = "product";
+                    card.className = "product reveal"; // Добавлен класс для анимации
                     card.innerHTML = `
                         <div class="img-container">
-                            <img src="${p.image}" alt="${p.title}" loading="lazy" onerror="${imgErr}">
+                            <img src="${p.image}" alt="${p.title}" loading="lazy" 
+                                 onerror="this.onerror=null;this.src='https://placehold.jp/24/0071e3/ffffff/300x300.png?text=Apple+Device';">
                         </div>
                         <div class="product-info">
                             <h3>${p.title}</h3>
@@ -82,9 +80,21 @@
                 });
             }
 
+            // Инициализация анимации появления
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
             document.querySelectorAll('.buy-btn').forEach(btn => {
                 btn.onclick = () => buy(btn.dataset.id, products);
             });
+
         } catch (err) {
             container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Ошибка загрузки сервера.</p>`;
         }
