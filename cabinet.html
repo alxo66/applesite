@@ -66,8 +66,8 @@
             <h2 style="margin-bottom: 20px; text-align: center;">Счёт на оплату</h2>
             
             <div class="input-group">
-                <label for="amount">Сумма пополнения (₽)</label>
-                <input id="amount" type="number" placeholder="Например: 5000" min="100">
+                <label for="amount">Сумма пополнения ($)</label>
+                <input id="amount" type="number" placeholder="Например: 1000" min="500">
             </div>
 
             <div class="input-group">
@@ -108,7 +108,7 @@
             const asset = document.getElementById("asset").value;
 
             if (!amount || amount < 100) {
-                alert("Минимальная сумма пополнения — 100 ₽");
+                alert("Минимальная сумма пополнения — 500 $");
                 return;
             }
 
