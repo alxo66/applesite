@@ -1,180 +1,237 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Apple Store</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Apple Store | Premium Reseller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-* { box-sizing: border-box; }
+    <style>
+        * { box-sizing: border-box; transition: all 0.3s ease; }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-  background: #f5f6f8;
-  color: #111;
-}
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background: #fbfbfd;
+            color: #1d1d1f;
+        }
 
-header {
-  background: #fff;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,.05);
-}
+        header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
 
-header strong {
-  font-size: 18px;
-}
+        header strong { font-size: 20px; letter-spacing: -0.5px; }
 
-header a {
-  margin-left: 16px;
-  text-decoration: none;
-  color: #000;
-  font-weight: 500;
-}
+        header nav a {
+            margin-left: 24px;
+            text-decoration: none;
+            color: #515154;
+            font-weight: 400;
+            font-size: 14px;
+        }
 
-.container {
-  max-width: 1200px;
-  margin: 32px auto;
-  padding: 0 20px;
-}
+        header nav a:hover { color: #0071e3; }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 24px;
-}
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-.card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.05);
-  display: flex;
-  flex-direction: column;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 32px;
+        }
 
-.card img {
-  width: 100%;
-  height: 220px;
-  object-fit: contain;
-  margin-bottom: 16px;
-}
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e5e5e7;
+        }
 
-.card h3 {
-  margin: 0 0 8px;
-}
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: transparent;
+        }
 
-.price {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 12px;
-}
+        .card img {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
 
-.desc {
-  font-size: 14px;
-  color: #555;
-  flex: 1;
-}
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
 
-button {
-  margin-top: 16px;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  background: #0071e3;
-  color: #fff;
-  font-size: 15px;
-  cursor: pointer;
-}
-</style>
+        .price {
+            font-size: 19px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 15px;
+        }
+
+        .desc {
+            font-size: 14px;
+            color: #86868b;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .specs {
+            margin: 0 0 20px;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+            color: #424245;
+        }
+
+        .specs li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .specs li::before {
+            content: "•";
+            color: #0071e3;
+            font-weight: bold;
+            display: inline-block;
+            width: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            background: #0071e3;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        button:hover { background: #0077ed; }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 
 <body>
 
 <header>
-  <strong>🍎 Apple Store</strong>
-  <nav>
-    <a href="/">Магазин</a>
-    <a href="/cabinet">Кабинет</a>
-  </nav>
+    <strong>🍎 Apple Store</strong>
+    <nav>
+        <a href="/">Магазин</a>
+        <a href="/cabinet">Кабинет</a>
+        <a href="/deposit">Пополнить</a>
+    </nav>
 </header>
 
 <div class="container">
-  <div class="grid" id="products"></div>
+    <div class="grid" id="products"></div>
 </div>
 
 <script>
 const CART_KEY = "apple_cart";
 
+// Обновленный список товаров: Линейка iPhone 17 + MacBook
 const products = [
-  {
-    id: 1,
-    title: "iPhone 16",
-    price: 79990,
-    img: "images/iphone-16.jpg",
-    desc: "Новый iPhone 16. OLED-дисплей, Face ID, мощный процессор."
-  },
-  {
-    id: 2,
-    title: "iPhone 16 Pro",
-    price: 99990,
-    img: "images/iphone-16-pro.jpg",
-    desc: "Pro-версия с камерой 48 Мп и титановым корпусом."
-  },
-  {
-    id: 3,
-    title: "iPhone 16 Pro Max",
-    price: 109990,
-    img: "images/iphone-16-pro-max.jpg",
-    desc: "Максимальный экран, автономность и топ-камера."
-  },
-  {
-    id: 4,
-    title: "iPhone 15",
-    price: 69990,
-    img: "images/iphone-15.jpg",
-    desc: "Отличный баланс цены и возможностей."
-  },
-  {
-    id: 5,
-    title: "MacBook Air 13",
-    price: 119990,
-    img: "images/macbook-air-13.jpg",
-    desc: "Лёгкий, быстрый, идеален для работы и учебы."
-  },
-  {
-    id: 6,
-    title: "MacBook Pro 14",
-    price: 179990,
-    img: "images/macbook-pro-14.jpg",
-    desc: "Максимальная производительность для профессионалов."
-  }
+    {
+        id: "i17",
+        title: "iPhone 17",
+        price: 799,
+        img: "images/iphone-16.jpg", // Используй свои фото
+        desc: "Новый стандарт мощности. Дисплей ProMotion 120 Гц для каждого.",
+        specs: ["Чип A19 Bionic", "Дисплей 6.3\"", "Камера 48 Мп"]
+    },
+    {
+        id: "i17air",
+        title: "iPhone Air",
+        price: 899,
+        img: "images/iphone-16-pro.jpg",
+        desc: "Невероятно тонкий дизайн. Новая эра портативности и стиля.",
+        specs: ["Титановый корпус", "Толщина всего 5мм", "Вес 145г"]
+    },
+    {
+        id: "i17pro",
+        title: "iPhone 17 Pro",
+        price: 999,
+        img: "images/iphone-16-pro-max.jpg",
+        desc: "Для тех, кто требует максимума. Профессиональная система камер.",
+        specs: ["Кнопка Action 2.0", "5x Оптический зум", "Чип A19 Pro"]
+    },
+    {
+        id: "i17promax",
+        title: "iPhone 17 Pro Max",
+        price: 1199,
+        img: "images/iphone-16-pro-max.jpg",
+        desc: "Самый большой дисплей и лучшая автономность в истории iPhone.",
+        specs: ["Экран 6.9\"", "Титановый сплав Grade 5", "Wi-Fi 7"]
+    },
+    {
+        id: "m4air",
+        title: "MacBook Air M4",
+        price: 1099,
+        img: "images/macbook-air-13.jpg",
+        desc: "Самый популярный ноутбук в мире теперь на чипе M4.",
+        specs: ["До 24 часов работы", "Без вентилятора", "Liquid Retina"]
+    },
+    {
+        id: "m4pro",
+        title: "MacBook Pro M4",
+        price: 1599,
+        img: "images/macbook-pro-14.jpg",
+        desc: "Невероятная мощь для разработчиков и дизайнеров.",
+        specs: ["Экран XDR 120 Гц", "До 128ГБ памяти", "Чип M4 Pro/Max"]
+    }
 ];
 
 function addToCart(product) {
-  const cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
-  cart.push(product);
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  alert("Товар добавлен в корзину");
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    cart.push(product);
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    alert(`${product.title} добавлен в корзину`);
 }
 
 const root = document.getElementById("products");
 
 products.forEach(p => {
-  const el = document.createElement("div");
-  el.className = "card";
-  el.innerHTML = `
-    <img src="${p.img}" alt="${p.title}">
-    <h3>${p.title}</h3>
-    <div class="price">${p.price.toLocaleString()} $</div>
-    <div class="desc">${p.desc}</div>
-    <button>Добавить в корзину</button>
-  `;
-  el.querySelector("button").onclick = () => addToCart(p);
-  root.appendChild(el);
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `
+        <img src="${p.img}" alt="${p.title}" onerror="this.src='https://via.placeholder.com/300x200?text=Apple+Device'">
+        <h3>${p.title}</h3>
+        <div class="price">${p.price.toLocaleString()} USDT</div>
+        <div class="desc">${p.desc}</div>
+        <ul class="specs">
+            ${p.specs.map(s => `<li>${s}</li>`).join('')}
+        </ul>
+        <button>Добавить в корзину</button>
+    `;
+    el.querySelector("button").onclick = () => addToCart(p);
+    root.appendChild(el);
 });
 </script>
 
