@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Доставка и получение — Apple Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .shipping-content {
+            max-width: 800px;
+            margin: 60px auto;
+            line-height: 1.6;
+        }
+        .shipping-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 28px;
+            margin-bottom: 24px;
+        }
+        .icon-box {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        .shipping-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 600px) {
+            .shipping-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="index.html" class="logo">Apple Store</a>
+    <nav>
+        <a href="index.html">Магазин</a>
+        <a href="cabinet.html">Личный кабинет</a>
+        <a href="shipping.html" class="active">Доставка</a>
+    </nav>
+</header>
+
+<div class="container shipping-content">
+    <h1>Доставка. <span>Быстро. Надежно. Бесплатно.</span></h1>
+
+    <div class="shipping-grid">
+        <div class="shipping-card">
+            <div class="icon-box">📦</div>
+            <h3>Бесплатная доставка</h3>
+            <p>Мы доставляем все заказы бесплатно по всей стране. Никаких скрытых платежей — цена в USDT финальная.</p>
+        </div>
+        <div class="shipping-card">
+            <div class="icon-box">⚡️</div>
+            <h3>Экспресс-отправка</h3>
+            <p>Заказы, оплаченные до 14:00, передаются в курьерскую службу в тот же день.</p>
+        </div>
+    </div>
+
+    <div class="shipping-card">
+        <h2>Как это работает?</h2>
+        <br>
+        <ol style="padding-left: 20px;">
+            <li><strong>Выбор и оплата:</strong> Выберите модель и оплатите заказ через CryptoBot в личном кабинете.</li>
+            <li><strong>Подтверждение:</strong> После оплаты статус заказа в кабинете изменится на «Оплачено». Наш менеджер свяжется с вами для уточнения адреса.</li>
+            <li><strong>Трекинг:</strong> Мы пришлем трек-номер для отслеживания посылки сразу после отправки.</li>
+            <li><strong>Получение:</strong> Курьер доставит заказ прямо до вашей двери.</li>
+        </ol>
+    </div>
+
+    <div class="shipping-card" style="text-align: center; background: #1d1d1f; color: #fff;">
+        <h3 style="color: #fff;">Возникли вопросы?</h3>
+        <p style="color: #86868b; margin-bottom: 20px;">Наша служба поддержки работает круглосуточно.</p>
+        <button onclick="window.location.href='faq.html'" style="background: #fff; color: #1d1d1f;">Написать в поддержку</button>
+    </div>
+</div>
+
+<footer>
+    <p>Copyright © 2026 Apple Store. Доставка осуществляется авторизованными логистическими партнерами.</p>
+</footer>
+
+</body>
+</html>
