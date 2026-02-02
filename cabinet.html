@@ -3,143 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Личный кабинет — Apple Store</title>
-    <link rel="stylesheet" href="style.css"> </head>
+    <title>Пополнение баланса — Apple Store</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Дополнительные стили специально для формы */
+        .deposit-card {
+            max-width: 500px;
+            margin: 40px auto;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #86868b;
+        }
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #d2d2d7;
+            background: #fff;
+            font-size: 17px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #0071e3;
+        }
+        .crypto-notice {
+            background: #f5f5f7;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #1d1d1f;
+        }
+    </style>
+</head>
 <body>
 
     <header class="header">
         <a href="index.html" class="logo">Apple Store</a>
         <nav>
             <a href="shop.html">Магазин</a>
-            <a href="cabinet.html" class="active">Кабинет</a>
-            <a href="deposit.html">Пополнить</a>
+            <a href="cabinet.html">Кабинет</a>
+            <a href="deposit.html" class="active">Пополнить</a>
         </nav>
     </header>
 
-    <div class="container" style="max-width: 800px;">
-        <h1>Ваш кабинет. <span>Управляйте заказами и балансом.</span></h1>
+    <div class="container">
+        <h1>Пополнение. <span>Мгновенное зачисление.</span></h1>
 
-        <div class="stats">
-            <div class="card">
-                <h3>Доступный баланс</h3>
-                <div class="value" id="balance">0 ₽</div>
-            </div>
-            <div class="card">
-                <h3>Заказов сделано</h3>
-                <div class="value" id="orderCount">0</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>Ваша корзина</h2>
-            <div id="cartList">
-                </div>
+        <div class="product deposit-card">
+            <h2 style="margin-bottom: 20px; text-align: center;">Счёт на оплату</h2>
             
-            <div id="cartSummary" style="margin-top: 25px; border-top: 1px solid #f5f5f7; pt: 20px; display: none;">
-                <div class="total" id="totalPrice" style="font-size: 24px; margin-bottom: 20px; text-align: right;"></div>
-                <div style="display: flex; gap: 15px;">
-                    <button id="orderBtn" style="flex: 2;">Оформить заказ</button>
-                    <button id="clearBtn" class="danger" style="flex: 1; background: #f5f5f7; color: #ff3b30;">Очистить</button>
-                </div>
+            <div class="input-group">
+                <label for="amount">Сумма пополнения (₽)</label>
+                <input id="amount" type="number" placeholder="Например: 5000" min="100">
             </div>
-        </div>
 
-        <div class="card">
-            <h2>История операций</h2>
-            <div id="history" style="font-size: 14px; color: #86868b;">
-                Загрузка истории...
+            <div class="input-group">
+                <label for="asset">Выберите актив</label>
+                <select id="asset">
+                    <option value="USDT">USDT (Tether)</option>
+                    <option value="BTC">Bitcoin</option>
+                    <option value="TON">TON (Toncoin)</option>
+                    <option value="ETH">Ethereum</option>
+                </select>
+            </div>
+
+            <button id="payBtn" style="width: 100%; margin-top: 10px;">Создать инвойс</button>
+
+            <div class="crypto-notice">
+                <span style="font-size: 20px;">🤖</span>
+                <p>Оплата производится через <b>CryptoBot</b>. Средства поступят на ваш баланс сразу после подтверждения транзакции.</p>
             </div>
         </div>
     </div>
 
+    <footer>
+        <p>Безопасные платежи через зашифрованные крипто-шлюзы.</p>
+    </footer>
+
     <script type="module">
-        import { getCabinet, createOrder, getCart, clearCart } from './api.js';
-
-        async function init() {
-            const data = await getCabinet();
-            const cart = getCart();
-
-            // Обновляем баланс
-            document.getElementById("balance").textContent = `${data.balance.toLocaleString()} ₽`;
-            document.getElementById("orderCount").textContent = data.orders.length;
-
-            // Отрисовка корзины
-            renderCartUI(cart);
-            
-            // Отрисовка истории
-            renderHistory(data.orders, data.deposits);
+        // Импортируем API (путь API уже прописан внутри api.js)
+        const API = "https://applestore-backend-production.up.railway.app";
+        
+        // Функция для получения User ID из localStorage (как в api.js)
+        function getUserId() {
+            return localStorage.getItem("applestore_user_id") || "guest";
         }
 
-        function renderCartUI(cart) {
-            const root = document.getElementById("cartList");
-            const summary = document.getElementById("cartSummary");
-            const totalEl = document.getElementById("totalPrice");
+        document.getElementById("payBtn").onclick = async () => {
+            const btn = document.getElementById("payBtn");
+            const amount = Number(document.getElementById("amount").value);
+            const asset = document.getElementById("asset").value;
 
-            if (!cart.length) {
-                root.innerHTML = `<p style="text-align: center; color: #86868b; padding: 20px;">Ваша сумка пуста.</p>`;
-                summary.style.display = "none";
+            if (!amount || amount < 100) {
+                alert("Минимальная сумма пополнения — 100 ₽");
                 return;
             }
 
-            summary.style.display = "block";
-            root.innerHTML = cart.map(item => `
-                <div class="item" style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f7;">
-                    <span>${item.title}</span>
-                    <span style="font-weight: 600;">${item.price.toLocaleString()} ₽</span>
-                </div>
-            `).join("");
+            // Визуальный фидбек
+            btn.disabled = true;
+            btn.innerText = "Создание счёта...";
 
-            const sum = cart.reduce((acc, item) => acc + item.price, 0);
-            totalEl.textContent = `Итого: ${sum.toLocaleString()} ₽`;
-        }
+            try {
+                const r = await fetch(`${API}/api/deposit`, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "x-user-id": getUserId() // ВАЖНО для твоего бэкенда
+                    },
+                    body: JSON.stringify({
+                        amount,
+                        currency: asset // в бэкенде поле может называться currency или asset
+                    })
+                });
 
-        function renderHistory(orders, deposits) {
-            const histEl = document.getElementById("history");
-            if (!orders.length && !deposits.length) {
-                histEl.textContent = "У вас пока нет операций.";
-                return;
-            }
-            
-            // Объединяем и выводим последние операции
-            const historyHTML = orders.map(o => `
-                <div style="margin-bottom: 8px; color: #1d1d1f;">
-                    🛍️ Заказ: ${o.title || 'Товар'} — <span style="color: #0071e3;">Выполнено</span>
-                </div>
-            `).join("");
-            
-            histEl.innerHTML = historyHTML;
-        }
+                const data = await r.json();
 
-        // Кнопка очистки
-        document.getElementById("clearBtn").onclick = () => {
-            clearCart();
-            init();
-        };
-
-        // Кнопка оформления
-        document.getElementById("orderBtn").onclick = async () => {
-            const cart = getCart();
-            let successCount = 0;
-
-            for (const item of cart) {
-                const res = await createOrder(item);
-                if (res.error) {
-                    alert(`Ошибка при покупке ${item.title}: ${res.error}`);
-                    break;
+                if (data.pay_url) {
+                    // Перенаправляем на оплату в CryptoBot
+                    window.location.href = data.pay_url;
+                } else {
+                    alert("Ошибка: бэкенд не вернул ссылку на оплату.");
+                    btn.disabled = false;
+                    btn.innerText = "Создать инвойс";
                 }
-                successCount++;
-            }
-
-            if (successCount === cart.length) {
-                alert("Все заказы успешно оформлены!");
-                clearCart();
-                init();
-            } else {
-                init(); // Обновляем, чтобы показать актуальный баланс
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка соединения с сервером Railway.");
+                btn.disabled = false;
+                btn.innerText = "Создать инвойс";
             }
         };
-
-        init();
     </script>
+
 </body>
 </html>
