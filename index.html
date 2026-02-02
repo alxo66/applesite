@@ -2,8 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Apple Store | Premium Reseller</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    
+    <title>Apple Store | Premium Reseller</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -53,14 +55,15 @@
             for (const [categoryName, items] of Object.entries(categories)) {
                 if (items.length === 0) continue;
 
+                // Создаем заголовок категории
                 const title = document.createElement("h2");
-                title.className = "category-title";
+                title.className = "category-title reveal";
                 title.innerText = categoryName;
                 container.appendChild(title);
 
                 items.forEach(p => {
                     const card = document.createElement("div");
-                    card.className = "product reveal"; // Добавлен класс для анимации
+                    card.className = "product reveal"; 
                     card.innerHTML = `
                         <div class="img-container">
                             <img src="${p.image}" alt="${p.title}" loading="lazy" 
@@ -80,7 +83,7 @@
                 });
             }
 
-            // Инициализация анимации появления
+            // Инициализация анимации появления (Intersection Observer)
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -91,11 +94,13 @@
 
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+            // Навешиваем клики на кнопки
             document.querySelectorAll('.buy-btn').forEach(btn => {
                 btn.onclick = () => buy(btn.dataset.id, products);
             });
 
         } catch (err) {
+            console.error("Ошибка:", err);
             container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Ошибка загрузки сервера.</p>`;
         }
     }
@@ -103,6 +108,8 @@
     async function buy(id, products) {
         const product = products.find(p => p.id === id);
         const btn = document.querySelector(`.buy-btn[data-id="${id}"]`);
+        
+        const originalText = btn.innerText;
         btn.innerText = "Оформление...";
         btn.disabled = true;
 
@@ -119,7 +126,7 @@
         } catch (err) {
             alert("Ошибка связи с сервером");
         } finally {
-            btn.innerText = "Купить";
+            btn.innerText = originalText;
             btn.disabled = false;
         }
     }
