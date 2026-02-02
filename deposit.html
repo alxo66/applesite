@@ -112,39 +112,65 @@ button {
   </div>
 </div>
 
-<script>
-const API = "https://applestore-backend-production.up.railway.app";
+<script type="module">
+    // Импортируем функции из твоего api.js (убедись, что путь верный)
+    // Либо используем прямой код, если api.js не подключен
+    
+    const API = "https://applestore-backend-production.up.railway.app";
 
-document.getElementById("payBtn").onclick = async () => {
-  const amount = Number(document.getElementById("amount").value);
-  const asset = document.getElementById("asset").value;
-
-  if (!amount || amount <= 0) {
-    alert("Введите сумму");
-    return;
-  }
-
-  try {
-    const r = await fetch(API + "/api/crypto/invoice", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount,
-        asset
-      })
-    });
-
-    const data = await r.json();
-
-    if (data.pay_url) {
-      window.location.href = data.pay_url;
-    } else {
-      alert("Ошибка создания счёта");
+    // Функция для получения ID пользователя (такая же, как в api.js)
+    function getUserId() {
+        let userId = localStorage.getItem("applestore_user_id");
+        if (!userId) {
+            userId = "user_" + Math.random().toString(36).substring(2, 11);
+            localStorage.setItem("applestore_user_id", userId);
+        }
+        return userId;
     }
-  } catch (e) {
-    alert("Ошибка соединения с сервером");
-  }
-};
+
+    document.getElementById("payBtn").onclick = async () => {
+        const btn = document.getElementById("payBtn");
+        const amount = Number(document.getElementById("amount").value);
+        const currency = document.getElementById("asset").value; // Меняем asset на currency для бэкенда
+
+        if (!amount || amount <= 0) {
+            alert("Введите корректную сумму в USDT");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Создание счета...";
+
+        try {
+            const r = await fetch(API + "/api/deposit", { // Исправлен путь
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-user-id": getUserId() // Добавлен заголовок авторизации
+                },
+                body: JSON.stringify({
+                    amount,
+                    currency // Отправляем как currency
+                })
+            });
+
+            const data = await r.json();
+
+            if (data.pay_url) {
+                // Успех: перенаправляем в CryptoBot
+                window.location.href = data.pay_url;
+            } else {
+                alert("Ошибка: " + (data.error || "Не удалось получить ссылку на оплату"));
+                btn.disabled = false;
+                btn.innerText = "Перейти к оплате";
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Ошибка соединения с сервером");
+            btn.disabled = false;
+            btn.innerText = "Перейти к оплате";
+        }
+    };
 </script>
 
 </body>
