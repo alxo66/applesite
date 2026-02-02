@@ -29,15 +29,17 @@
 
         <div class="cabinet-card deposit-card">
             <h3>Пополнение счёта</h3>
+            
             <div class="input-group">
                 <label>Сумма пополнения ($)</label>
                 <input type="number" id="deposit-amount" placeholder="Например: 1000">
             </div>
-            
+
             <div class="input-group">
                 <label>Выберите актив</label>
                 <select id="asset-select">
                     <option value="USDT">USDT (Tether)</option>
+                    <option value="ETH">Ethereum (ETH)</option>
                     <option value="TON">TON</option>
                     <option value="BTC">Bitcoin</option>
                 </select>
@@ -65,11 +67,19 @@
 </footer>
 
 <script type="module">
-    // Здесь будет логика загрузки баланса и создания инвойса
     document.getElementById('create-invoice').onclick = () => {
-        const amount = document.getElementById('deposit-amount').value;
-        if (!amount || amount <= 0) return alert('Введите сумму');
-        alert('Инвойс на ' + amount + ' USDT создан в CryptoBot!');
+        const amountInput = document.getElementById('deposit-amount');
+        const assetSelect = document.getElementById('asset-select');
+        
+        const amount = amountInput.value;
+        const asset = assetSelect.value;
+
+        if (!amount || amount <= 0) {
+            alert('Пожалуйста, введите корректную сумму');
+            return;
+        }
+
+        alert(`Инвойс на ${amount} ${asset} успешно создан в CryptoBot!`);
     };
 </script>
 
