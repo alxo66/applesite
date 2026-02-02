@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <header class="header">
@@ -20,10 +19,8 @@
 
 <div class="container">
     <h1>Магазин. <span>Лучшее от Apple.</span></h1>
-    
     <div id="products" class="products">
         <div style="text-align: center; grid-column: 1/-1; padding: 100px; opacity: 0.5;">
-            <div class="loader"></div>
             <p>Загрузка актуального ассортимента...</p>
         </div>
     </div>
@@ -36,11 +33,13 @@
 <script type="module">
     import { getProducts, createOrder } from './api.js';
 
+    // Функция-заглушка для битых картинок (используем надежный сервис placehold.jp)
+    const imgErr = "this.onerror=null;this.src='https://placehold.jp/24/0071e3/ffffff/300x300.png?text=Apple+Device';";
+
     async function loadProducts() {
         const container = document.getElementById("products");
         try {
             const products = await getProducts();
-
             if (!products || products.length === 0) {
                 container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Товары временно отсутствуют.</p>`;
                 return;
@@ -48,7 +47,6 @@
 
             container.innerHTML = "";
 
-            // Группировка
             const categories = {
                 "iPhone": products.filter(p => p.title.toLowerCase().includes("iphone")),
                 "iPad": products.filter(p => p.title.toLowerCase().includes("ipad")),
@@ -68,7 +66,7 @@
                     card.className = "product";
                     card.innerHTML = `
                         <div class="img-container">
-                            <img src="${p.image}" alt="${p.title}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x300?text=Apple+Device'">
+                            <img src="${p.image}" alt="${p.title}" loading="lazy" onerror="${imgErr}">
                         </div>
                         <div class="product-info">
                             <h3>${p.title}</h3>
@@ -88,7 +86,7 @@
                 btn.onclick = () => buy(btn.dataset.id, products);
             });
         } catch (err) {
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Ошибка загрузки. Проверьте соединение с сервером.</p>`;
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Ошибка загрузки сервера.</p>`;
         }
     }
 
