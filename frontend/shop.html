@@ -1,46 +1,90 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Apple Store</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Store — Магазин</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Apple Store</h1>
-<div id="products" class="grid"></div>
+    <header class="header">
+        <a href="index.html" class="logo">Apple Store</a>
+        <nav>
+            <a href="shop.html" class="active">Магазин</a>
+            <a href="cabinet.html">Кабинет</a>
+            <a href="faq.html">Поддержка</a>
+        </nav>
+    </header>
 
-<script src="api.js"></script>
-<script>
-async function loadProducts() {
-  const products = await api("/products");
-  const el = document.getElementById("products");
-
-  el.innerHTML = products.map(p => `
-    <div class="card">
-      <img src="${p.image}">
-      <h3>${p.name}</h3>
-      <p>${p.price.toLocaleString()} ₽</p>
-      <button onclick="buy('${p.id}')">Купить</button>
+    <div class="container">
+        <h1>Магазин. <span>Лучшее от Apple.</span></h1>
+        
+        <div id="products" class="products">
+            <div style="text-align: center; grid-column: 1/-1; padding: 50px; opacity: 0.5;">
+                Загрузка инноваций...
+            </div>
+        </div>
     </div>
-  `).join("");
-}
 
-async function buy(id) {
-  const res = await api("/order", {
-    method: "POST",
-    body: JSON.stringify({ productId: id })
-  });
+    <footer>
+        <p>Copyright © 2024 Apple Store. Все права защищены.</p>
+    </footer>
 
-  if (res.success) {
-    alert("Покупка успешна");
-  } else {
-    alert("Недостаточно средств");
-  }
-}
+    <script type="module">
+        import { getProducts, createOrder } from './api.js';
 
-loadProducts();
-</script>
+        // Загрузка товаров
+        async function loadProducts() {
+            const products = await getProducts();
+            const el = document.getElementById("products");
+
+            if (!products || products.length === 0) {
+                el.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Товары временно отсутствуют.</p>`;
+                return;
+            }
+
+            el.innerHTML = products.map(p => `
+                <div class="product">
+                    <img src="${p.image}" alt="${p.title}">
+                    <div class="product-info">
+                        <h3>${p.title}</h3>
+                        <p>${p.description}</p>
+                        <div class="price">${p.price.toLocaleString()} ₽</div>
+                        <button class="buy-btn" data-id="${p.id}">Купить</button>
+                    </div>
+                </div>
+            `).join("");
+
+            // Навешиваем обработчики на кнопки
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.addEventListener('click', () => buy(btn.getAttribute('data-id')));
+            });
+        }
+
+        // Логика покупки
+        async function buy(id) {
+            const products = await getProducts();
+            const product = products.find(p => p.id === id);
+            
+            if (!product) return alert("Товар не найден");
+
+            const res = await createOrder(product);
+
+            if (res.success) {
+                alert("Заказ успешно создан! Проверьте статус в личном кабинете.");
+                window.location.href = "cabinet.html";
+            } else {
+                // Если ошибка "NO_BALANCE" или любая другая от твоего бэкенда
+                if (confirm("Недостаточно средств. Перейти к пополнению?")) {
+                    window.location.href = "deposit.html";
+                }
+            }
+        }
+
+        // Запуск
+        loadProducts();
+    </script>
 
 </body>
 </html>
