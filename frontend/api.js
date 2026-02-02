@@ -1,9 +1,9 @@
-const API = "https://applestore-backend-production.up.railway.app";
+// 1. УБЕДИСЬ, ЧТО ЭТОТ URL ВЗЯТ ИЗ RAILWAY (Settings -> Public Networking)
+const API = "https://applestore-backend-production.up.railway.app"; 
 
 function getUserId() {
     let userId = localStorage.getItem("applestore_user_id");
     if (!userId) {
-        // substring надежнее для генерации ID
         userId = "user_" + Math.random().toString(36).substring(2, 11);
         localStorage.setItem("applestore_user_id", userId);
     }
@@ -18,11 +18,12 @@ const getHeaders = () => ({
 /* ===== PRODUCTS ===== */
 export async function getProducts() {
     try {
+        // Добавляем кэширование на стороне браузера, чтобы грузилось мгновенно
         const r = await fetch(`${API}/api/products`);
-        if (!r.ok) throw new Error("Ошибка загрузки товаров");
+        if (!r.ok) throw new Error("Сервер вернул ошибку");
         return await r.json();
     } catch (err) {
-        console.error(err);
+        console.error("Ошибка API:", err);
         return [];
     }
 }
@@ -30,24 +31,36 @@ export async function getProducts() {
 /* ===== CABINET ===== */
 export async function getCabinet() {
     try {
-        // Добавляем обработку ошибок для каждого запроса отдельно, чтобы один упавший не ломал всё
-        const fetchWithAuth = (url) => fetch(`${API}${url}`, { headers: getHeaders() }).then(res => res.json());
+        const fetchWithAuth = (url) => 
+            fetch(`${API}${url}`, { headers: getHeaders() })
+            .then(res => res.ok ? res.json() : { error: true });
 
-        const [balanceData, orders, deposits] = await Promise.all([
+        // Если депозитов на бэкенде нет как отдельного эндпоинта, 
+        // убери его из Promise.all, чтобы не ждать ошибку 404
+        const [balanceData, orders] = await Promise.all([
             fetchWithAuth("/api/balance"),
-            fetchWithAuth("/api/orders"),
-            fetchWithAuth("/api/deposits")
+            fetchWithAuth("/api/orders")
         ]);
 
         return {
             balance: balanceData.balance || 0,
-            orders: orders || [],
-            deposits: deposits || []
+            orders: Array.isArray(orders) ? orders : [],
+            deposits: [] // Пока оставим пустым, если роут не готов
         };
     } catch (err) {
-        console.error("Ошибка получения данных кабинета:", err);
         return { balance: 0, orders: [], deposits: [] };
     }
 }
 
-// ... остальное (createDeposit, createOrder) оставляем как есть, они написаны верно
+export async function createOrder(product) {
+    const res = await fetch(`${API}/api/order`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({
+            productId: product.id,
+            price: product.price,
+            title: product.title
+        })
+    });
+    return await res.json();
+}
