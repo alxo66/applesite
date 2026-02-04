@@ -1,4 +1,3 @@
-// 1. УБЕДИСЬ, ЧТО ЭТОТ URL ВЗЯТ ИЗ RAILWAY (Settings -> Public Networking)
 const API = "https://applestore-backend-production.up.railway.app"; 
 
 function getUserId() {
@@ -18,7 +17,6 @@ const getHeaders = () => ({
 /* ===== PRODUCTS ===== */
 export async function getProducts() {
     try {
-        // Добавляем кэширование на стороне браузера, чтобы грузилось мгновенно
         const r = await fetch(`${API}/api/products`);
         if (!r.ok) throw new Error("Сервер вернул ошибку");
         return await r.json();
@@ -35,8 +33,6 @@ export async function getCabinet() {
             fetch(`${API}${url}`, { headers: getHeaders() })
             .then(res => res.ok ? res.json() : { error: true });
 
-        // Если депозитов на бэкенде нет как отдельного эндпоинта, 
-        // убери его из Promise.all, чтобы не ждать ошибку 404
         const [balanceData, orders] = await Promise.all([
             fetchWithAuth("/api/balance"),
             fetchWithAuth("/api/orders")
@@ -45,21 +41,27 @@ export async function getCabinet() {
         return {
             balance: balanceData.balance || 0,
             orders: Array.isArray(orders) ? orders : [],
-            deposits: [] // Пока оставим пустым, если роут не готов
+            deposits: [] 
         };
     } catch (err) {
         return { balance: 0, orders: [], deposits: [] };
     }
 }
 
+/* ===== CREATE ORDER ===== */
 export async function createOrder(product) {
+    // В объекте product теперь лежат и выбранные опции (color, storage)
+    // которые мы подготовили в index.html
     const res = await fetch(`${API}/api/order`, {
         method: "POST",
         headers: getHeaders(),
         body: JSON.stringify({
             productId: product.id,
             price: product.price,
-            title: product.title
+            title: product.title,
+            // Добавляем инфо о выборе в заказ
+            selectedColor: product.selectedOptions?.color || 'Стандартный',
+            selectedStorage: product.selectedOptions?.storage || 'Базовый'
         })
     });
     return await res.json();
