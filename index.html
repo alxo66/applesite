@@ -42,6 +42,13 @@
 <script type="module">
     import { getProducts, createOrder } from './api.js';
 
+    // Функция переключения выбора (Цвет/Память)
+    window.selectOption = (element, className) => {
+        const parent = element.parentElement;
+        parent.querySelectorAll(`.${className}`).forEach(item => item.classList.remove('active'));
+        element.classList.add('active');
+    };
+
     async function loadProducts() {
         const container = document.getElementById("products");
         try {
@@ -62,7 +69,6 @@
             for (const [categoryName, items] of Object.entries(categories)) {
                 if (items.length === 0) continue;
 
-                // Создаем заголовок категории
                 const title = document.createElement("h2");
                 title.className = "category-title reveal";
                 title.innerText = categoryName;
@@ -79,9 +85,33 @@
                         <div class="product-info">
                             <h3>${p.title}</h3>
                             <p>${p.description}</p>
+                            
                             <ul class="specs-list">
                                 ${p.specs ? p.specs.map(s => `<li>${s}</li>`).join('') : ''}
                             </ul>
+
+                            ${p.colors ? `
+                                <div class="color-selector">
+                                    ${p.colors.map((color, index) => `
+                                        <div class="color-dot ${index === 0 ? 'active' : ''}" 
+                                             style="background-color: ${color}" 
+                                             onclick="selectOption(this, 'color-dot')">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
+                            ${p.storage ? `
+                                <div class="storage-selector">
+                                    ${p.storage.map((size, index) => `
+                                        <div class="storage-item ${index === 0 ? 'active' : ''}" 
+                                             onclick="selectOption(this, 'storage-item')">
+                                            ${size}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
                             <div class="price">${p.price.toLocaleString()} USDT</div>
                             <button class="buy-btn" data-id="${p.id}">Купить</button>
                         </div>
@@ -90,7 +120,7 @@
                 });
             }
 
-            // Инициализация анимации появления (Intersection Observer)
+            // Intersection Observer для анимаций
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -101,9 +131,16 @@
 
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Навешиваем клики на кнопки
+            // Клики на кнопки Купить
             document.querySelectorAll('.buy-btn').forEach(btn => {
-                btn.onclick = () => buy(btn.dataset.id, products);
+                btn.onclick = () => {
+                    const card = btn.closest('.product');
+                    // Собираем выбранные параметры
+                    const selectedColor = card.querySelector('.color-dot.active')?.style.backgroundColor;
+                    const selectedStorage = card.querySelector('.storage-item.active')?.innerText;
+                    
+                    buy(btn.dataset.id, products, { color: selectedColor, storage: selectedStorage });
+                };
             });
 
         } catch (err) {
@@ -112,18 +149,21 @@
         }
     }
 
-    async function buy(id, products) {
+    async function buy(id, products, options) {
         const product = products.find(p => p.id === id);
         const btn = document.querySelector(`.buy-btn[data-id="${id}"]`);
+        
+        // Добавляем выбранные опции к объекту продукта для заказа
+        const orderData = { ...product, selectedOptions: options };
         
         const originalText = btn.innerText;
         btn.innerText = "Оформление...";
         btn.disabled = true;
 
         try {
-            const res = await createOrder(product);
+            const res = await createOrder(orderData);
             if (res.success) {
-                alert("Заказ успешно создан!");
+                alert(`Заказ на ${product.title} (${options.storage || ''}) успешно создан!`);
                 window.location.href = "cabinet.html";
             } else {
                 if (confirm("Недостаточно средств. Перейти к пополнению?")) {
