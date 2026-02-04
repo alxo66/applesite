@@ -1,4 +1,4 @@
-const API = "https://applestore-backend-production.up.railway.app"; 
+const API = "https://applestore-backend.onrender.com"; 
 
 function getUserId() {
     let userId = localStorage.getItem("applestore_user_id");
