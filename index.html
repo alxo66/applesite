@@ -42,17 +42,42 @@
 <script type="module">
     import { getProducts, createOrder } from './api.js';
 
-    // Функция переключения выбора (Цвет/Память)
-    window.selectOption = (element, className) => {
+    let allProductsData = []; // Храним загруженные данные локально
+
+    // Улучшенная функция выбора параметров
+    window.selectOption = (element, type, value, productId) => {
+        const card = element.closest('.product');
+        const product = allProductsData.find(p => p.id === productId);
+        
+        // 1. Переключаем визуальную активность
         const parent = element.parentElement;
-        parent.querySelectorAll(`.${className}`).forEach(item => item.classList.remove('active'));
+        parent.querySelectorAll(type === 'color' ? '.color-dot' : '.storage-item').forEach(item => item.classList.remove('active'));
         element.classList.add('active');
+
+        // 2. Если выбрали цвет — меняем картинку
+        if (type === 'color' && product.images) {
+            const imgElement = card.querySelector('.img-container img');
+            // Переводим цвет из style (rgb) обратно в hex для поиска в объекте, 
+            // либо используем переданный value (hex)
+            if (product.images[value]) {
+                imgElement.src = product.images[value];
+            }
+        }
+
+        // 3. Если выбрали память — меня!ем цену
+        if (type === 'storage' && product.storagePrices) {
+            const priceElement = card.querySelector('.price');
+            const newPrice = product.storagePrices[value] || product.price;
+            priceElement.innerText = `${newPrice.toLocaleString()} USDT`;
+        }
     };
 
     async function loadProducts() {
         const container = document.getElementById("products");
         try {
             const products = await getProducts();
+            allProductsData = products; // Сохраняем в глобальную переменную
+
             if (!products || products.length === 0) {
                 container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Товары временно отсутствуют.</p>`;
                 return;
@@ -79,7 +104,7 @@
                     card.className = "product reveal"; 
                     card.innerHTML = `
                         <div class="img-container">
-                            <img src="${p.image}" alt="${p.title}" loading="lazy" 
+                            <img src="${p.image}" alt="${p.title}" id="img-${p.id}" loading="lazy" 
                                  onerror="this.onerror=null;this.src='https://placehold.jp/24/0071e3/ffffff/300x300.png?text=Apple+Device';">
                         </div>
                         <div class="product-info">
@@ -95,7 +120,7 @@
                                     ${p.colors.map((color, index) => `
                                         <div class="color-dot ${index === 0 ? 'active' : ''}" 
                                              style="background-color: ${color}" 
-                                             onclick="selectOption(this, 'color-dot')">
+                                             onclick="selectOption(this, 'color', '${color}', '${p.id}')">
                                         </div>
                                     `).join('')}
                                 </div>
@@ -105,7 +130,7 @@
                                 <div class="storage-selector">
                                     ${p.storage.map((size, index) => `
                                         <div class="storage-item ${index === 0 ? 'active' : ''}" 
-                                             onclick="selectOption(this, 'storage-item')">
+                                             onclick="selectOption(this, 'storage', '${size}', '${p.id}')">
                                             ${size}
                                         </div>
                                     `).join('')}
@@ -120,7 +145,7 @@
                 });
             }
 
-            // Intersection Observer для анимаций
+            // Анимации появления
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -131,15 +156,24 @@
 
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Клики на кнопки Купить
+            // Обработка кнопки "Купить"
             document.querySelectorAll('.buy-btn').forEach(btn => {
                 btn.onclick = () => {
                     const card = btn.closest('.product');
-                    // Собираем выбранные параметры
+                    const productId = btn.dataset.id;
+                    const product = allProductsData.find(p => p.id === productId);
+
+                    // Собираем финальные данные из UI
                     const selectedColor = card.querySelector('.color-dot.active')?.style.backgroundColor;
-                    const selectedStorage = card.querySelector('.storage-item.active')?.innerText;
-                    
-                    buy(btn.dataset.id, products, { color: selectedColor, storage: selectedStorage });
+                    const selectedStorage = card.querySelector('.storage-item.active')?.innerText.trim();
+                    const currentPriceText = card.querySelector('.price').innerText;
+                    const finalPrice = parseInt(currentPriceText.replace(/[^0-9]/g, ''));
+
+                    buy(productId, allProductsData, { 
+                        color: selectedColor, 
+                        storage: selectedStorage,
+                        price: finalPrice 
+                    });
                 };
             });
 
@@ -153,8 +187,15 @@
         const product = products.find(p => p.id === id);
         const btn = document.querySelector(`.buy-btn[data-id="${id}"]`);
         
-        // Добавляем выбранные опции к объекту продукта для заказа
-        const orderData = { ...product, selectedOptions: options };
+        // Формируем заказ с учетом измененной цены и выбора
+        const orderData = { 
+            ...product, 
+            price: options.price, // Берем цену, которую видел пользователь
+            selectedOptions: {
+                color: options.color,
+                storage: options.storage
+            } 
+        };
         
         const originalText = btn.innerText;
         btn.innerText = "Оформление...";
