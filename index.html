@@ -42,41 +42,48 @@
 <script type="module">
     import { getProducts, createOrder } from './api.js';
 
-    let allProductsData = []; // Храним загруженные данные локально
+    let allProductsData = []; 
 
-    // Улучшенная функция выбора параметров
+    // Улучшенная функция выбора параметров с поддержкой SIM
     window.selectOption = (element, type, value, productId) => {
         const card = element.closest('.product');
         const product = allProductsData.find(p => p.id === productId);
         
         // 1. Переключаем визуальную активность
         const parent = element.parentElement;
-        parent.querySelectorAll(type === 'color' ? '.color-dot' : '.storage-item').forEach(item => item.classList.remove('active'));
+        const selectorClass = type === 'color' ? '.color-dot' : (type === 'storage' ? '.storage-item' : '.sim-item');
+        parent.querySelectorAll(selectorClass).forEach(item => item.classList.remove('active'));
         element.classList.add('active');
 
         // 2. Если выбрали цвет — меняем картинку
         if (type === 'color' && product.images) {
             const imgElement = card.querySelector('.img-container img');
-            // Переводим цвет из style (rgb) обратно в hex для поиска в объекте, 
-            // либо используем переданный value (hex)
             if (product.images[value]) {
                 imgElement.src = product.images[value];
             }
         }
 
-        // 3. Если выбрали память — меня!ем цену
-        if (type === 'storage' && product.storagePrices) {
-            const priceElement = card.querySelector('.price');
-            const newPrice = product.storagePrices[value] || product.price;
-            priceElement.innerText = `${newPrice.toLocaleString()} USDT`;
-        }
+        // 3. Динамический пересчет цены (Память + SIM)
+        const priceElement = card.querySelector('.price');
+        
+        const activeStorage = card.querySelector('.storage-item.active')?.innerText.trim();
+        const activeSim = card.querySelector('.sim-item.active')?.innerText.trim();
+
+        // Базовая цена от выбранной памяти
+        let basePrice = product.storagePrices && activeStorage ? product.storagePrices[activeStorage] : product.price;
+        
+        // Наценка за SIM (если есть)
+        let simMarkup = (product.simPrices && activeSim) ? product.simPrices[activeSim] : 0;
+
+        const finalPrice = basePrice + simMarkup;
+        priceElement.innerText = `${finalPrice.toLocaleString()} USDT`;
     };
 
     async function loadProducts() {
         const container = document.getElementById("products");
         try {
             const products = await getProducts();
-            allProductsData = products; // Сохраняем в глобальную переменную
+            allProductsData = products; 
 
             if (!products || products.length === 0) {
                 container.innerHTML = `<p style="grid-column: 1/-1; text-align: center;">Товары временно отсутствуют.</p>`;
@@ -86,9 +93,9 @@
             container.innerHTML = "";
 
             const categories = {
-                "iPhone": products.filter(p => p.title.toLowerCase().includes("iphone")),
-                "iPad": products.filter(p => p.title.toLowerCase().includes("ipad")),
-                "MacBook": products.filter(p => p.title.toLowerCase().includes("macbook"))
+                "iPhone": products.filter(p => p.id.startsWith("i15") || p.id.startsWith("i16") || p.id.startsWith("i17")),
+                "iPad": products.filter(p => p.id.includes("ipad")),
+                "MacBook": products.filter(p => p.id.includes("mbp") || p.id.includes("mba"))
             };
 
             for (const [categoryName, items] of Object.entries(categories)) {
@@ -137,6 +144,17 @@
                                 </div>
                             ` : ''}
 
+                            ${p.sim ? `
+                                <div class="sim-selector">
+                                    ${p.sim.map((type, index) => `
+                                        <div class="sim-item ${index === 0 ? 'active' : ''}" 
+                                             onclick="selectOption(this, 'sim', '${type}', '${p.id}')">
+                                            ${type}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+
                             <div class="price">${p.price.toLocaleString()} USDT</div>
                             <button class="buy-btn" data-id="${p.id}">Купить</button>
                         </div>
@@ -145,7 +163,6 @@
                 });
             }
 
-            // Анимации появления
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -156,22 +173,22 @@
 
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-            // Обработка кнопки "Купить"
             document.querySelectorAll('.buy-btn').forEach(btn => {
                 btn.onclick = () => {
                     const card = btn.closest('.product');
                     const productId = btn.dataset.id;
                     const product = allProductsData.find(p => p.id === productId);
 
-                    // Собираем финальные данные из UI
                     const selectedColor = card.querySelector('.color-dot.active')?.style.backgroundColor;
                     const selectedStorage = card.querySelector('.storage-item.active')?.innerText.trim();
+                    const selectedSim = card.querySelector('.sim-item.active')?.innerText.trim() || "N/A";
                     const currentPriceText = card.querySelector('.price').innerText;
                     const finalPrice = parseInt(currentPriceText.replace(/[^0-9]/g, ''));
 
                     buy(productId, allProductsData, { 
                         color: selectedColor, 
                         storage: selectedStorage,
+                        sim: selectedSim,
                         price: finalPrice 
                     });
                 };
@@ -187,13 +204,14 @@
         const product = products.find(p => p.id === id);
         const btn = document.querySelector(`.buy-btn[data-id="${id}"]`);
         
-        // Формируем заказ с учетом измененной цены и выбора
         const orderData = { 
-            ...product, 
-            price: options.price, // Берем цену, которую видел пользователь
+            productId: product.id,
+            title: product.title,
+            price: options.price, 
             selectedOptions: {
                 color: options.color,
-                storage: options.storage
+                storage: options.storage,
+                sim: options.sim
             } 
         };
         
@@ -204,7 +222,7 @@
         try {
             const res = await createOrder(orderData);
             if (res.success) {
-                alert(`Заказ на ${product.title} (${options.storage || ''}) успешно создан!`);
+                alert(`Заказ на ${product.title} успешно создан!`);
                 window.location.href = "cabinet.html";
             } else {
                 if (confirm("Недостаточно средств. Перейти к пополнению?")) {
