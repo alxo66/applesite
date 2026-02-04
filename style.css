@@ -278,3 +278,48 @@ footer p {
     color: var(--sub);
     margin-top: 40px;
 }
+/* Выбор цвета */
+.color-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.color-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.2s;
+    outline: 1px solid rgba(0,0,0,0.1);
+}
+
+.color-dot.active {
+    border-color: var(--blue);
+    transform: scale(1.2);
+}
+
+/* Выбор памяти */
+.storage-selector {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.storage-item {
+    padding: 4px 10px;
+    border: 1px solid #d2d2d7;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.storage-item.active {
+    background: var(--text);
+    color: #fff;
+    border-color: var(--text);
+}
