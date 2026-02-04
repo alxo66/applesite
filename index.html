@@ -44,18 +44,15 @@
 
     let allProductsData = []; 
 
-    // Улучшенная функция выбора параметров с поддержкой SIM
     window.selectOption = (element, type, value, productId) => {
         const card = element.closest('.product');
         const product = allProductsData.find(p => p.id === productId);
         
-        // 1. Переключаем визуальную активность
         const parent = element.parentElement;
         const selectorClass = type === 'color' ? '.color-dot' : (type === 'storage' ? '.storage-item' : '.sim-item');
         parent.querySelectorAll(selectorClass).forEach(item => item.classList.remove('active'));
         element.classList.add('active');
 
-        // 2. Если выбрали цвет — меняем картинку
         if (type === 'color' && product.images) {
             const imgElement = card.querySelector('.img-container img');
             if (product.images[value]) {
@@ -63,16 +60,11 @@
             }
         }
 
-        // 3. Динамический пересчет цены (Память + SIM)
         const priceElement = card.querySelector('.price');
-        
         const activeStorage = card.querySelector('.storage-item.active')?.innerText.trim();
         const activeSim = card.querySelector('.sim-item.active')?.innerText.trim();
 
-        // Базовая цена от выбранной памяти
         let basePrice = product.storagePrices && activeStorage ? product.storagePrices[activeStorage] : product.price;
-        
-        // Наценка за SIM (если есть)
         let simMarkup = (product.simPrices && activeSim) ? product.simPrices[activeSim] : 0;
 
         const finalPrice = basePrice + simMarkup;
@@ -92,10 +84,11 @@
 
             container.innerHTML = "";
 
+            // Улучшенная фильтрация: цепляем все 14 товаров по ID
             const categories = {
                 "iPhone": products.filter(p => p.id.startsWith("i15") || p.id.startsWith("i16") || p.id.startsWith("i17")),
-                "iPad": products.filter(p => p.id.includes("ipad")),
-                "MacBook": products.filter(p => p.id.includes("mbp") || p.id.includes("mba"))
+                "iPad": products.filter(p => p.id.startsWith("ipad")),
+                "MacBook": products.filter(p => p.id.startsWith("mbp") || p.id.startsWith("mbair") || p.id.startsWith("mabair"))
             };
 
             for (const [categoryName, items] of Object.entries(categories)) {
